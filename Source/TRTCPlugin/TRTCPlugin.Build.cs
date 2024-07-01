@@ -15,6 +15,7 @@ public class TRTCPlugin : ModuleRules
 				// ... add public include paths required here ...
 			}
 		);
+		
 
 		PrivateIncludePaths.AddRange(
 			new string[]
@@ -30,7 +31,8 @@ public class TRTCPlugin : ModuleRules
 				"TRTCSDK",
 
 				// Test Only
-				"UserSig",
+				"UserSig", 
+				"Media"
 			}
 		);
 
@@ -41,6 +43,8 @@ public class TRTCPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"MediaUtils",
+
 			}
 		);
 
