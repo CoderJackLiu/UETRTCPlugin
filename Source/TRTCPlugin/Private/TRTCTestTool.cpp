@@ -10,7 +10,8 @@
 #include "Runtime/Launch/Public/Android/AndroidJNI.h"
 #endif
 
-std::string liteav::ue::TestUserSigGenerator::gen(const char* identifier, int sdkAppId, const char* secretKey) {
+std::string liteav::ue::TestUserSigGenerator::gen(const char* identifier, int sdkAppId, const char* secretKey)
+{
 #if PLATFORM_ANDROID
   if (JNIEnv* Env = FAndroidApplication::GetJavaEnv()) {
     jmethodID GetPackageNameMethodID =
@@ -28,6 +29,6 @@ std::string liteav::ue::TestUserSigGenerator::gen(const char* identifier, int sd
     return "";
   }
 #else
-  return GenerateTestUserSig::genTestUserSig(identifier, sdkAppId, secretKey);
+	return GenerateTestUserSig::genTestUserSig(identifier, sdkAppId, secretKey);
 #endif
 }
