@@ -127,17 +127,12 @@ TRTCCloud* TRTCCloud::getSharedInstance(void* context) {
 			trtc_cloud_->setMixTranscodingConfig(config);
 		}
 
-		void TRTCCloud::startPublishMediaStream(TRTCPublishTarget* target,
-		                                        TRTCStreamEncoderParam* params,
-		                                        TRTCStreamMixingConfig* config)
+		void TRTCCloud::startPublishMediaStream(TRTCPublishTarget* target, TRTCStreamEncoderParam* params, TRTCStreamMixingConfig* config)
 		{
 			trtc_cloud_->startPublishMediaStream(target, params, config);
 		}
 
-		void TRTCCloud::updatePublishMediaStream(const char* taskId,
-		                                         TRTCPublishTarget* target,
-		                                         TRTCStreamEncoderParam* params,
-		                                         TRTCStreamMixingConfig* config)
+		void TRTCCloud::updatePublishMediaStream(const char* taskId, TRTCPublishTarget* target, TRTCStreamEncoderParam* params, TRTCStreamMixingConfig* config)
 		{
 			trtc_cloud_->updatePublishMediaStream(taskId, target, params, config);
 		}
@@ -348,10 +343,7 @@ void TRTCCloud::startLocalPreview(bool frontCamera, TXView view) {
 			trtc_cloud_->enable3DSpatialAudioEffect(enabled);
 		}
 
-		void TRTCCloud::updateSelf3DSpatialPosition(int position[3],
-		                                            float axisForward[3],
-		                                            float axisRight[3],
-		                                            float axisUp[3])
+		void TRTCCloud::updateSelf3DSpatialPosition(int position[3], float axisForward[3], float axisRight[3], float axisUp[3])
 		{
 			trtc_cloud_->updateSelf3DSpatialPosition(position, axisForward, axisRight, axisUp);
 		}
@@ -361,26 +353,15 @@ void TRTCCloud::startLocalPreview(bool frontCamera, TXView view) {
 			return trtc_cloud_->getDeviceManager();
 		}
 
-		void TRTCCloud::setBeautyStyle(TRTCBeautyStyle style,
-		                               uint32_t beautyLevel,
-		                               uint32_t whitenessLevel,
-		                               uint32_t ruddinessLevel)
+		void TRTCCloud::setBeautyStyle(TRTCBeautyStyle style, uint32_t beautyLevel, uint32_t whitenessLevel, uint32_t ruddinessLevel)
 		{
 			trtc_cloud_->setBeautyStyle(style, beautyLevel, whitenessLevel, ruddinessLevel);
 		}
 
-		void TRTCCloud::setWaterMark(TRTCVideoStreamType streamType,
-		                             const char* srcData,
-		                             TRTCWaterMarkSrcType srcType,
-		                             uint32_t nWidth,
-		                             uint32_t nHeight,
-		                             float xOffset,
-		                             float yOffset,
-		                             float fWidthRatio,
-		                             bool isVisibleOnLocalPreview)
+		void TRTCCloud::setWaterMark(TRTCVideoStreamType streamType, const char* srcData, TRTCWaterMarkSrcType srcType, uint32_t nWidth,
+		                             uint32_t nHeight, float xOffset, float yOffset, float fWidthRatio, bool isVisibleOnLocalPreview)
 		{
-			trtc_cloud_->setWaterMark(streamType, srcData, srcType, nWidth, nHeight, xOffset, yOffset, fWidthRatio,
-			                          isVisibleOnLocalPreview);
+			trtc_cloud_->setWaterMark(streamType, srcData, srcType, nWidth, nHeight, xOffset, yOffset, fWidthRatio, isVisibleOnLocalPreview);
 		}
 
 		ITXAudioEffectManager* TRTCCloud::getAudioEffectManager()
@@ -437,9 +418,7 @@ void TRTCCloud::startLocalPreview(bool frontCamera, TXView view) {
 #endif
 
 #if TARGET_PLATFORM_DESKTOP
-		void TRTCCloud::selectScreenCaptureTarget(const TRTCScreenCaptureSourceInfo& source,
-		                                          const RECT& captureRect,
-		                                          const TRTCScreenCaptureProperty& property)
+		void TRTCCloud::selectScreenCaptureTarget(const TRTCScreenCaptureSourceInfo& source, const RECT& captureRect, const TRTCScreenCaptureProperty& property)
 		{
 			trtc_cloud_->selectScreenCaptureTarget(source, captureRect, property);
 		}
@@ -539,24 +518,17 @@ void TRTCCloud::startLocalPreview(bool frontCamera, TXView view) {
 			return trtc_cloud_->generateCustomPTS();
 		}
 
-		int TRTCCloud::setLocalVideoProcessCallback(TRTCVideoPixelFormat pixelFormat,
-		                                            TRTCVideoBufferType bufferType,
-		                                            ITRTCVideoFrameCallback* callback)
+		int TRTCCloud::setLocalVideoProcessCallback(TRTCVideoPixelFormat pixelFormat, TRTCVideoBufferType bufferType, ITRTCVideoFrameCallback* callback)
 		{
 			return trtc_cloud_->setLocalVideoProcessCallback(pixelFormat, bufferType, callback);
 		}
 
-		int TRTCCloud::setLocalVideoRenderCallback(TRTCVideoPixelFormat pixelFormat,
-		                                           TRTCVideoBufferType bufferType,
-		                                           ITRTCVideoRenderCallback* callback)
+		int TRTCCloud::setLocalVideoRenderCallback(TRTCVideoPixelFormat pixelFormat, TRTCVideoBufferType bufferType, ITRTCVideoRenderCallback* callback)
 		{
 			return trtc_cloud_->setLocalVideoRenderCallback(pixelFormat, bufferType, callback);
 		}
 
-		int TRTCCloud::setRemoteVideoRenderCallback(const char* userId,
-		                                            TRTCVideoPixelFormat pixelFormat,
-		                                            TRTCVideoBufferType bufferType,
-		                                            ITRTCVideoRenderCallback* callback)
+		int TRTCCloud::setRemoteVideoRenderCallback(const char* userId, TRTCVideoPixelFormat pixelFormat, TRTCVideoBufferType bufferType, ITRTCVideoRenderCallback* callback)
 		{
 			return trtc_cloud_->setRemoteVideoRenderCallback(userId, pixelFormat, bufferType, callback);
 		}
