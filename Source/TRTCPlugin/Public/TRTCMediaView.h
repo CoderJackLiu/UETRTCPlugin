@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "IMediaView.h"
+#include "TRTCCloud.h"
 
 class FTRTCMediaView : public IMediaView
 {
@@ -12,8 +13,8 @@ public:
 	//  */
 	// void Initialize(FLibvlcMediaPlayer& InPlayer);
 	//
-	// /** Shut down this object. */
-	// void Shutdown();
+	/** Shut down this object. */
+	void Shutdown();
 
 public:
 	//~ IMediaView interface
@@ -30,9 +31,9 @@ private:
 	/** The current view orientation. */
 	FQuat CurrentOrientation;
 
-	// /** The VLC media player object. */
-	// FLibvlcMediaPlayer* Player;
-	//
-	// /** The VLC video viewpoint. */
+	/** The VLC media player object. */
+	ue::TRTCCloud* Player = nullptr;
+	
+	/** The VLC video viewpoint. */
 	// FLibvlcVideoViewpoint* Viewpoint;
 };

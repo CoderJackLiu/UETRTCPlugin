@@ -17,15 +17,13 @@
 // #include "VlcMediaView.h"
 
 
-namespace liteav::ue
-{
-	class TRTCCloud;
-}
+namespace trtc = liteav;
+
 
 class IMediaEventSink;
 class IMediaOutput;
 
-class FTRTCMediaPlayer : public IMediaPlayer, protected IMediaCache, protected IMediaControls
+class FTRTCMediaPlayer : public IMediaPlayer, protected IMediaCache, protected IMediaControls, protected IMediaView
 {
 public:
 	/**
@@ -33,11 +31,10 @@ public:
 	 *
 	 * @param InEventSink The object that receives media events from this player.
 	 */
-	FTRTCMediaPlayer(IMediaEventSink& InEventSink );
-	
-	/** Virtual destructor. */
-	virtual ~FTRTCMediaPlayer();
+	FTRTCMediaPlayer(IMediaEventSink& InEventSink);
 
+	/** Virtual destructor. */
+	virtual ~FTRTCMediaPlayer() override;
 
 public:
 	//~ IMediaPlayer interface
@@ -47,7 +44,7 @@ public:
 	virtual IMediaControls& GetControls() override;
 	virtual FString GetInfo() const override;
 	virtual FName GetPlayerName() const;
-	virtual FGuid GetPlayerPluginGUID() const;
+	virtual FGuid GetPlayerPluginGUID() const override;
 	virtual IMediaSamples& GetSamples() override;
 	virtual FString GetStats() const override;
 	virtual IMediaTracks& GetTracks() override;
@@ -57,18 +54,22 @@ public:
 	virtual bool Open(const TSharedRef<FArchive, ESPMode::ThreadSafe>& Archive, const FString& OriginalUrl, const IMediaOptions* Options) override;
 	virtual void TickInput(FTimespan DeltaTime, FTimespan Timecode) override;
 
-	
-protected:
 
+	//enter room for trtc
+	void EnterRoom(trtc::TRTCParams params, trtc::TRTCAppScene scene) const;
+	void ExitRoom();
+
+
+
+protected:
 	/**
 	 * Initialize the media player.
 	 *
 	 * @return true on success, false otherwise.
 	 */
 	bool InitializePlayer();
-	
-protected:
 
+protected:
 	//~ IMediaControls interface
 
 	virtual bool CanControl(EMediaControl Control) const override;
@@ -82,14 +83,14 @@ protected:
 	virtual bool Seek(const FTimespan& Time) override;
 	virtual bool SetLooping(bool Looping) override;
 	virtual bool SetRate(float Rate) override;
-	
+
 private:
 	/** VLC callback manager. */
 	FTRTCMediaCallbacks Callbacks;
-	
+
 	/** Current playback rate. */
 	float CurrentRate;
-	
+
 	/** Current playback time (to work around VLC's broken time tracking). */
 	FTimespan CurrentTime;
 
@@ -98,13 +99,13 @@ private:
 
 	/** Media information string. */
 	FString Info;
-	
+
 	/** The media source (from URL or archive). */
 	FTRTCMediaSource MediaSource;
 
 	/** The VLC media player object. */
 	liteav::ue::TRTCCloud* Player;
-	
+
 	/** Whether playback should be looping. */
 	bool ShouldLoop;
 
@@ -113,7 +114,11 @@ private:
 
 
 	/** View settings. */
-	FTRTCMediaView View;
+	//FTRTCMediaView View;
 
-	
+	FMediaSamples* Samples;
+
+
+
+
 };

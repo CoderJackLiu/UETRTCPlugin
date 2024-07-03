@@ -2,9 +2,11 @@
 
 #include "IMediaEventSink.h"
 #include "IMediaOptions.h"
+#include "MediaSamples.h"
 #include "TRTCCloud.h"
 #include "TRTCLogMacro.h"
 #include "TRTCMediaCallbacks.h"
+#include "TRTCTestTool.h"
 #include "Serialization/ArrayReader.h"
 
 
@@ -12,10 +14,11 @@ FTRTCMediaPlayer::FTRTCMediaPlayer(IMediaEventSink& InEventSink)
 	: CurrentRate(0)
 	  , CurrentTime(FTimespan::Zero())
 	  , EventSink(InEventSink)
-		//todo liuqi 也许需要赋值
+	  //todo liuqi 也许需要赋值
 	  , MediaSource(nullptr)
 	  , Player(nullptr)
 	  , ShouldLoop(false)
+	  , Samples(new FMediaSamples)
 {
 }
 
@@ -27,31 +30,42 @@ FTRTCMediaPlayer::~FTRTCMediaPlayer()
 void FTRTCMediaPlayer::Close()
 {
 	//todo liuqi 关闭播放器
-	
-	// if (Player == nullptr)
-	// {
-	// 	return;
-	// }
-	//
-	// // detach callback handlers
-	// Callbacks.Shutdown();
-	// Tracks.Shutdown();
+
+	if (Player == nullptr)
+	{
+		return;
+	}
+	ExitRoom();
+	// detach callback handlers
+	Callbacks.Shutdown();
+	Tracks.Shutdown();
 	// View.Shutdown();
-	//
-	// // release player
-	// FVlc::MediaPlayerStop(Player);
-	// FVlc::MediaPlayerRelease(Player);
-	// Player = nullptr;
-	//
-	// // reset fields
-	// CurrentRate = 0.0f;
-	// CurrentTime = FTimespan::Zero();
-	// MediaSource.Close();
-	// Info.Empty();
-	//
-	// // notify listeners
-	// EventSink.ReceiveMediaEvent(EMediaEvent::TracksChanged);
-	// EventSink.ReceiveMediaEvent(EMediaEvent::MediaClosed);
+
+	// release player
+	if (Player != nullptr)
+	{
+		Player->exitRoom();
+		//todo liuqi 接口继承
+		// Player->removeCallback(this);
+		Player->destroySharedInstance();
+		Player = nullptr;
+	}
+	//todo liuqi 放置内存泄露
+	// delete[] localBuffer;
+	// delete localUpdateTextureRegion;
+	// delete[] remoteBuffer;
+	// delete remoteUpdateTextureRegion;
+	Player = nullptr;
+
+	// reset fields
+	CurrentRate = 0.0f;
+	CurrentTime = FTimespan::Zero();
+	MediaSource.Close();
+	Info.Empty();
+
+	// notify listeners
+	EventSink.ReceiveMediaEvent(EMediaEvent::TracksChanged);
+	EventSink.ReceiveMediaEvent(EMediaEvent::MediaClosed);
 }
 
 IMediaCache& FTRTCMediaPlayer::GetCache()
@@ -104,7 +118,7 @@ FString FTRTCMediaPlayer::GetUrl() const
 
 IMediaView& FTRTCMediaPlayer::GetView()
 {
-	return View;
+	return *this;
 }
 
 bool FTRTCMediaPlayer::Open(const FString& Url, const IMediaOptions* Options)
@@ -183,22 +197,46 @@ bool FTRTCMediaPlayer::Open(const TSharedRef<FArchive, ESPMode::ThreadSafe>& Arc
 
 void FTRTCMediaPlayer::TickInput(FTimespan DeltaTime, FTimespan Timecode)
 {
-	IMediaPlayer::TickInput(DeltaTime, Timecode);
+	if (Player == nullptr)
+	{
+		return;
+	}
+	Callbacks.SetCurrentTime(CurrentTime);
+}
+
+void FTRTCMediaPlayer::EnterRoom(trtc::TRTCParams params, trtc::TRTCAppScene scene) const
+{
+	Player->enterRoom(params, scene);
+	//Player->startLocalAudio(trtc::TRTCAudioQualityDefault);
+}
+
+void FTRTCMediaPlayer::ExitRoom()
+{
+	Player->exitRoom();
 }
 
 bool FTRTCMediaPlayer::InitializePlayer()
 {
 	// create player for media source
 	Player = liteav::ue::TRTCCloud::getSharedInstance();
-
-
 	if (Player == nullptr)
 	{
 		//todo 
 		// UE_LOG(LogTRTCMedia, Warning, TEXT("Failed to initialize media player: %s"), ANSI_TO_TCHAR(FVlc::Errmsg()));
 		return false;
 	}
+	Player->addCallback(&Tracks);
 
+	//todo liuqi  后期从项目设置中获取到对应的APPKEY SECRET 等信息 动态获取uid, roomid等信息
+	TRTCParams params;
+	params.role = TRTCRoleAudience;
+	params.sdkAppId = 1600042662;
+	params.userId = "user1";
+	const char* userSig = "7ac4ceb6a62da74fa2743c8297da50b2a27faf8500360088acc1e3f3ad7fc193";
+	std::string sSig = liteav::ue::TestUserSigGenerator().gen(params.userId, params.sdkAppId, userSig);
+	params.userSig = sSig.c_str();
+	params.roomId = 123;
+	EnterRoom(params, TRTCAppSceneLIVE);
 	//todo 
 	// attach to event managers
 	// FLibvlcEventManager* MediaEventManager = FVlc::MediaEventManager(MediaSource.GetMedia());
