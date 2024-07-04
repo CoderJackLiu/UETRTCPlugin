@@ -23,7 +23,7 @@ namespace trtc = liteav;
 class IMediaEventSink;
 class IMediaOutput;
 
-class FTRTCMediaPlayer : public IMediaPlayer, protected IMediaCache, protected IMediaControls, protected IMediaView
+class FTRTCMediaPlayer : public IMediaPlayer, protected IMediaCache, protected IMediaView
 {
 public:
 	/**
@@ -56,10 +56,8 @@ public:
 
 
 	//enter room for trtc
-	void EnterRoom(trtc::TRTCParams params, trtc::TRTCAppScene scene) const;
+	void EnterRoom(const TRTCParams& params, TRTCAppScene scene) const;
 	void ExitRoom();
-
-
 
 protected:
 	/**
@@ -69,30 +67,13 @@ protected:
 	 */
 	bool InitializePlayer();
 
-protected:
-	//~ IMediaControls interface
 
-	virtual bool CanControl(EMediaControl Control) const override;
-	virtual FTimespan GetDuration() const override;
-	virtual float GetRate() const override;
-	virtual EMediaState GetState() const override;
-	virtual EMediaStatus GetStatus() const override;
-	virtual TRangeSet<float> GetSupportedRates(EMediaRateThinning Thinning) const override;
-	virtual FTimespan GetTime() const override;
-	virtual bool IsLooping() const override;
-	virtual bool Seek(const FTimespan& Time) override;
-	virtual bool SetLooping(bool Looping) override;
-	virtual bool SetRate(float Rate) override;
 
 private:
+
 	/** VLC callback manager. */
 	FTRTCMediaCallbacks Callbacks;
 
-	/** Current playback rate. */
-	float CurrentRate;
-
-	/** Current playback time (to work around VLC's broken time tracking). */
-	FTimespan CurrentTime;
 
 	/** The media event handler. */
 	IMediaEventSink& EventSink;
@@ -100,14 +81,13 @@ private:
 	/** Media information string. */
 	FString Info;
 
-	/** The media source (from URL or archive). */
-	FTRTCMediaSource MediaSource;
+	// /** The media source (from URL or archive). */
+	// FTRTCMediaSource MediaSource;
 
 	/** The VLC media player object. */
 	liteav::ue::TRTCCloud* Player;
 
-	/** Whether playback should be looping. */
-	bool ShouldLoop;
+
 
 	/** Track collection. */
 	FTRTCMediaTracks Tracks;
@@ -117,8 +97,4 @@ private:
 	//FTRTCMediaView View;
 
 	FMediaSamples* Samples;
-
-
-
-
 };

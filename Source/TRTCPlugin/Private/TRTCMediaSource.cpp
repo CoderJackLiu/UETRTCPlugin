@@ -20,7 +20,7 @@ FTimespan FTRTCMediaSource::GetDuration() const
 	// 	return FTimespan::Zero();
 	// }
 
-	return FTimespan(0);
+	return FTimespan(FTimespan(100.f * ETimespan::TicksPerMillisecond));
 }
 
 void FTRTCMediaSource::Close()

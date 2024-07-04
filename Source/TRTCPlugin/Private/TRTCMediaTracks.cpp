@@ -2,10 +2,28 @@
 
 #include "TRTCLogMacro.h"
 #include "TRTCTypeDef.h"
+#include "MediaSamples.h"
+#include "TRTCMediaAudioSample.h"
+#include "TRTCMediaTextureSample.h"
 
 //todo liuqi 完善所有实现
 
 FTRTCMediaTracks::FTRTCMediaTracks()
+	: Player(nullptr)
+	  , Samples(new FMediaSamples)
+	  , CurrentRate(30.f)
+	  , ShouldLoop(false)
+	  , CurrentTime(FTimespan::Zero())
+	  , AudioChannels(0)
+	  , AudioSampleFormat(EMediaAudioSampleFormat::Int16)
+	  , AudioSamplePool(new FTRTCMediaAudioSamplePool)
+	  , AudioSampleRate(0)
+	  , AudioSampleSize(0)
+	  , VideoBufferDim(FIntPoint::ZeroValue)
+	  , VideoBufferStride(0)
+	  , VideoOutputDim(FIntPoint::ZeroValue)
+	  , VideoSampleFormat(EMediaTextureSampleFormat::CharAYUV)
+	  , VideoSamplePool(new FTRTCMediaTextureSamplePool), CurrentState()
 {
 }
 
@@ -25,6 +43,19 @@ void FTRTCMediaTracks::Initialize(liteav::ue::TRTCCloud& InPlayer, FString& OutI
 
 void FTRTCMediaTracks::Shutdown()
 {
+	if (Player == nullptr)
+	{
+		return;
+	}
+	Player = nullptr;
+
+	// unregister callbacks
+
+	AudioSamplePool->Reset();
+	VideoSamplePool->Reset();
+
+	CurrentTime = FTimespan::Zero();
+	Player = nullptr;
 }
 
 bool FTRTCMediaTracks::GetAudioTrackFormat(int32 TrackIndex, int32 FormatIndex, FMediaAudioTrackFormat& OutFormat) const
@@ -215,7 +246,7 @@ void FTRTCMediaTracks::onUserSubStreamAvailable(const char* userId, bool availab
 	}
 	else
 	{
-		Player->stopRemoteView(userId, trtc::TRTCVideoStreamTypeSub);
+		Player->stopRemoteView(userId, TRTCVideoStreamTypeSub);
 		ResetBuffer(false);
 		//todo liuqi 暂停  析构
 		//		remoteRenderTargetTexture->UpdateTextureRegions(0, 1, remoteUpdateTextureRegion, remoteWidth * 4, (uint32)4, remoteBuffer);
@@ -232,24 +263,90 @@ void FTRTCMediaTracks::onWarning(TXLiteAVWarning warningCode, const char* warnin
 	writeCallbackLog(warningMsg);
 }
 
-void FTRTCMediaTracks::WriteLblLog(const char* logStr)
+void FTRTCMediaTracks::onFirstVideoFrame(const char* userId, const TRTCVideoStreamType streamType, const int width, const int height)
+{
+	//log
+	UE_LOG(LogTRTCMedia, Warning, TEXT("onFirstVideoFrame userId:%hs streamType:%d width:%d height:%d"), ANSI_TO_TCHAR(userId), streamType, width, height)
+}
+
+void FTRTCMediaTracks::onFirstAudioFrame(const char* userId)
+{
+	//log
+	UE_LOG(LogTRTCMedia, Warning, TEXT("onFirstAudioFrame userId:%hs"), ANSI_TO_TCHAR(userId))
+}
+
+void FTRTCMediaTracks::onNetworkQuality(TRTCQualityInfo localQuality, TRTCQualityInfo* remoteQuality, uint32_t remoteQualityCount)
+{
+	//log
+	UE_LOG(LogTRTCMedia, Warning, TEXT("onNetworkQuality"))
+}
+
+void FTRTCMediaTracks::onStatistics(const TRTCStatistics& statistics)
+{
+	//log
+	UE_LOG(LogTRTCMedia, Warning, TEXT("onStatistics"))
+}
+
+void FTRTCMediaTracks::onSpeedTestResult(const TRTCSpeedTestResult& result)
+{
+	//break struct result and log quality
+	UE_LOG(LogTRTCMedia, Warning, TEXT("TRTC onSpeedTestResult"))
+	//todo liuqi log result.quality 
+	UE_LOG(LogTRTCMedia, Warning, TEXT("TRTC onSpeedTestResult quality"))
+}
+
+void FTRTCMediaTracks::onConnectionLost()
+{
+	//log
+	UE_LOG(LogTRTCMedia, Warning, TEXT("TRTC onConnectionLost"))
+}
+
+void FTRTCMediaTracks::onTryToReconnect()
+{
+	//log
+	UE_LOG(LogTRTCMedia, Warning, TEXT("TRTC onTryToReconnect"))
+}
+
+void FTRTCMediaTracks::WriteLblLog(const char* logStr) const
 {
 	std::string stdStrLog(logStr);
 	FString log = stdStrLog.c_str();
 	UE_LOG(LogTRTCMedia, Log, TEXT("TRTC Log ==> %s"), *log);
 }
 
-void FTRTCMediaTracks::writeCallbackLog(const char* logStr)
+void FTRTCMediaTracks::writeCallbackLog(const char* logStr) const
 {
 	std::string stdStrLog(logStr);
 	FString log = stdStrLog.c_str();
 	UE_LOG(LogTRTCMedia, Log, TEXT("TRTC Callback<== %s"), *log);
 }
 
-void FTRTCMediaTracks::onRenderVideoFrame(const char* userId, TRTCVideoStreamType streamType, TRTCVideoFrame* frame)
+void FTRTCMediaTracks::onRenderVideoFrame(const char* userId, TRTCVideoStreamType streamType, TRTCVideoFrame* videoFrame)
 {
 	//log
 	UE_LOG(LogTRTCMedia, Warning, TEXT("onRenderVideoFrame userId:%s streamType:%d"), ANSI_TO_TCHAR(userId), streamType)
+
+
+	auto VideoSample = reinterpret_cast<FTRTCMediaTextureSample*>(videoFrame);
+
+	VideoSample->SetTime(FTimespan(1));
+
+	Samples->AddVideo(VideoSamplePool->ToShared(VideoSample));
+
+
+	// int frameLength = videoFrame->length;
+	// std::string strUserId(TCHAR_TO_UTF8(*userId));
+	//
+	// if (frameLength > 1)
+	// {
+	// 	bool isLocalUser = ((strcmp(strUserId.c_str(), userId) == 0 || nullptr == userId || strlen(userId) == 0) && streamType == TRTCVideoStreamTypeBig) ? true : false;
+	// 	UpdateBuffer(videoFrame->data, videoFrame->width, videoFrame->height, frameLength, isLocalUser);
+	// }
+}
+
+IMediaSamples& FTRTCMediaTracks::GetSamples() const
+{
+	return *Samples;
 }
 
 void FTRTCMediaTracks::ResetBuffer(bool isLocal)
@@ -276,4 +373,114 @@ void FTRTCMediaTracks::ResetBuffer(bool isLocal)
 		}
 		remoteRefresh = false;
 	}
+}
+
+void FTRTCMediaTracks::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t NewHeight, uint32_t NewSize, bool isLocal)
+{
+}
+
+bool FTRTCMediaTracks::CanControl(EMediaControl Control) const
+{
+	if (Player == nullptr)
+	{
+		return false;
+	}
+
+	//todo liuqi 看看这个能不能暂停 恢复 seek
+
+	if (Control == EMediaControl::Pause)
+	{
+		return true;
+	}
+
+	if (Control == EMediaControl::Resume)
+	{
+		return true;
+	}
+
+	if (Control == EMediaControl::Scrub)
+	{
+		return true;
+	}
+
+	if (Control == EMediaControl::Seek)
+	{
+		return false;;
+	}
+
+	return false;
+}
+
+FTimespan FTRTCMediaTracks::GetDuration() const
+{
+	return FTimespan(100 * ETimespan::TicksPerMillisecond);
+}
+
+float FTRTCMediaTracks::GetRate() const
+{
+	return CurrentRate;
+}
+
+EMediaState FTRTCMediaTracks::GetState() const
+{
+	if (Player == nullptr)
+	{
+		return EMediaState::Closed;
+	}
+
+	return CurrentState; // should never get here
+}
+
+EMediaStatus FTRTCMediaTracks::GetStatus() const
+{
+	return EMediaStatus::None;
+}
+
+TRangeSet<float> FTRTCMediaTracks::GetSupportedRates(EMediaRateThinning Thinning) const
+{
+	TRangeSet<float> Result;
+
+	if (Thinning == EMediaRateThinning::Thinned)
+	{
+		Result.Add(TRange<float>::Inclusive(0.0f, 10.0f));
+	}
+	else
+	{
+		Result.Add(TRange<float>::Inclusive(0.0f, 1.0f));
+	}
+
+	return Result;
+}
+
+FTimespan FTRTCMediaTracks::GetTime() const
+{
+	return CurrentTime;
+}
+
+bool FTRTCMediaTracks::IsLooping() const
+{
+	return ShouldLoop;
+}
+
+bool FTRTCMediaTracks::Seek(const FTimespan& Time)
+{
+	return false;
+}
+
+bool FTRTCMediaTracks::SetLooping(bool Looping)
+{
+	//todo liuqi
+	ShouldLoop = Looping;
+	return true;
+}
+
+bool FTRTCMediaTracks::SetRate(float Rate)
+{
+	if (Player == nullptr)
+	{
+		return false;
+	}
+	//todo 播放 设置播放频率
+
+	return true;
 }
