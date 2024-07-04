@@ -190,6 +190,16 @@ bool FTRTCMediaPlayer::Open(const TSharedRef<FArchive, ESPMode::ThreadSafe>& Arc
 
 void FTRTCMediaPlayer::TickInput(FTimespan DeltaTime, FTimespan Timecode)
 {
+	EMediaState State = Tracks.GetState();
+	if (State == EMediaState::Playing)
+	{
+		CurrentTime += DeltaTime * CurrentRate;
+	}
+	else
+	{
+		CurrentRate = 0.f;
+	}
+	Tracks.SetCurrentTime(CurrentTime);
 }
 
 void FTRTCMediaPlayer::EnterRoom(const TRTCParams& params, TRTCAppScene scene) const
@@ -214,7 +224,7 @@ bool FTRTCMediaPlayer::InitializePlayer()
 		return false;
 	}
 	Player->addCallback(&Tracks);
-
+	Tracks.Initialize(*Player, Info);
 	//todo liuqi  后期从项目设置中获取到对应的APPKEY SECRET 等信息 动态获取uid, roomid等信息
 	TRTCParams params;
 	params.role = TRTCRoleAudience;

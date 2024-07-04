@@ -67,10 +67,7 @@ protected:
 	 */
 	bool InitializePlayer();
 
-
-
 private:
-
 	/** VLC callback manager. */
 	FTRTCMediaCallbacks Callbacks;
 
@@ -87,6 +84,11 @@ private:
 	/** The VLC media player object. */
 	liteav::ue::TRTCCloud* Player;
 
+	/** Current playback rate. */
+	float CurrentRate = 30.f;
+
+	/** Current playback time (to work around VLC's broken time tracking). */
+	FTimespan CurrentTime;
 
 
 	/** Track collection. */

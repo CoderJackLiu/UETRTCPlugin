@@ -29,7 +29,14 @@ public:
 	FTRTCMediaTracks();
 
 	IMediaSamples& GetSamples() const;
-	
+
+	/**
+	 * Set the player's current time.
+	 *
+	 * @param Time The player's play time.
+	 */
+	void SetCurrentTime(FTimespan Time);
+
 
 public:
 	/**
@@ -83,14 +90,12 @@ private:
 	void ResetBuffer(bool isLocal);
 	void UpdateBuffer(char* RGBBuffer, uint32_t Width, uint32_t Height, uint32_t Size, bool isLocal);
 
-
 protected:
 	//~ IMediaControls interface
 
 	virtual bool CanControl(EMediaControl Control) const override;
 	virtual FTimespan GetDuration() const override;
 	virtual float GetRate() const override;
-	virtual EMediaState GetState() const override;
 	virtual EMediaStatus GetStatus() const override;
 	virtual TRangeSet<float> GetSupportedRates(EMediaRateThinning Thinning) const override;
 	virtual FTimespan GetTime() const override;
@@ -98,7 +103,10 @@ protected:
 	virtual bool Seek(const FTimespan& Time) override;
 	virtual bool SetLooping(bool Looping) override;
 	virtual bool SetRate(float Rate) override;
-	
+
+public:
+	virtual EMediaState GetState() const override;
+
 private:
 	//local
 	FCriticalSection localMutex;
@@ -116,8 +124,6 @@ private:
 	bool remoteRefresh = false;
 	uint32 remoteBufferSize = 0;
 
-
-
 private:
 	/** Audio track descriptors. */
 	TArray<FTrack> AudioTracks;
@@ -132,10 +138,10 @@ private:
 	TArray<FTrack> VideoTracks;
 
 	FTimespan TargetTime;
-	
+
 	/** The output media samples. */
 	FMediaSamples* Samples;
-	
+
 	/** Current number of channels in audio samples( accessed by VLC thread only). */
 	uint32 AudioChannels;
 
@@ -168,20 +174,17 @@ private:
 
 	/** Play time of the previous frame. */
 	FTimespan VideoPreviousTime;
-	
+
 	/** Current video sample format (accessed by VLC thread only). */
 	EMediaTextureSampleFormat VideoSampleFormat;
 
 	/** Video sample object pool. */
 	FTRTCMediaTextureSamplePool* VideoSamplePool;
 
-
-
 private:
-
 	/** Media playback state. */
-	EMediaState CurrentState;
-	
+	EMediaState CurrentState = EMediaState::Closed;
+
 	/** Current playback rate. */
 	float CurrentRate = 0.0f;
 
@@ -190,6 +193,4 @@ private:
 
 	/** Whether playback should be looping. */
 	bool ShouldLoop;
-
-
 };

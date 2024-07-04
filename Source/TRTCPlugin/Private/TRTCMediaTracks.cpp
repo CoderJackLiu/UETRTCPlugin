@@ -204,12 +204,14 @@ void FTRTCMediaTracks::onExitRoom(int reason)
 {
 	writeCallbackLog("onExitRoom");
 	UE_LOG(LogTRTCMedia, Log, TEXT("<== %d"), reason);
+	CurrentState = EMediaState::Closed;
 }
 
 void FTRTCMediaTracks::onEnterRoom(int result)
 {
 	writeCallbackLog("onEnterRoom");
 	UE_LOG(LogTRTCMedia, Log, TEXT("<== %d"), result);
+	CurrentState = EMediaState::Preparing;
 }
 
 void FTRTCMediaTracks::onUserVideoAvailable(const char* userId, bool available)
@@ -221,10 +223,12 @@ void FTRTCMediaTracks::onUserVideoAvailable(const char* userId, bool available)
 		Player->startRemoteView(userId, TRTCVideoStreamTypeBig, nullptr);
 
 		Player->setRemoteVideoRenderCallback(userId, TRTCVideoPixelFormat_BGRA32, TRTCVideoBufferType_Buffer, this);
+		CurrentState = EMediaState::Preparing;
 	}
 	else
 	{
 		Player->stopRemoteView(userId, TRTCVideoStreamTypeBig);
+		CurrentState = EMediaState::Stopped;
 
 		//todo liuqi 暂停  析构
 		// ResetBuffer(false);
@@ -243,10 +247,12 @@ void FTRTCMediaTracks::onUserSubStreamAvailable(const char* userId, bool availab
 	{
 		Player->startRemoteView(userId, TRTCVideoStreamTypeSub, nullptr);
 		Player->setRemoteVideoRenderCallback(userId, TRTCVideoPixelFormat_BGRA32, TRTCVideoBufferType_Buffer, this);
+		CurrentState = EMediaState::Preparing;
 	}
 	else
 	{
 		Player->stopRemoteView(userId, TRTCVideoStreamTypeSub);
+		CurrentState = EMediaState::Stopped;
 		ResetBuffer(false);
 		//todo liuqi 暂停  析构
 		//		remoteRenderTargetTexture->UpdateTextureRegions(0, 1, remoteUpdateTextureRegion, remoteWidth * 4, (uint32)4, remoteBuffer);
@@ -267,6 +273,14 @@ void FTRTCMediaTracks::onFirstVideoFrame(const char* userId, const TRTCVideoStre
 {
 	//log
 	UE_LOG(LogTRTCMedia, Warning, TEXT("onFirstVideoFrame userId:%hs streamType:%d width:%d height:%d"), ANSI_TO_TCHAR(userId), streamType, width, height)
+
+	auto VideoSample = VideoSamplePool->Acquire();
+	if (VideoSample->Initialize(FIntPoint(width, height), FIntPoint(width, height), EMediaTextureSampleFormat::CharAYUV, width * 4, FTimespan(1)))
+	{
+		return;
+	}
+	VideoSample->SetTime(FTimespan(1));
+	//todo liuqi
 }
 
 void FTRTCMediaTracks::onFirstAudioFrame(const char* userId)
@@ -278,7 +292,9 @@ void FTRTCMediaTracks::onFirstAudioFrame(const char* userId)
 void FTRTCMediaTracks::onNetworkQuality(TRTCQualityInfo localQuality, TRTCQualityInfo* remoteQuality, uint32_t remoteQualityCount)
 {
 	//log
-	UE_LOG(LogTRTCMedia, Warning, TEXT("onNetworkQuality"))
+
+
+	UE_LOG(LogTRTCMedia, Warning, TEXT("onNetworkQuality :localQuality:%d"), localQuality.quality)
 }
 
 void FTRTCMediaTracks::onStatistics(const TRTCStatistics& statistics)
@@ -326,13 +342,17 @@ void FTRTCMediaTracks::onRenderVideoFrame(const char* userId, TRTCVideoStreamTyp
 	//log
 	UE_LOG(LogTRTCMedia, Warning, TEXT("onRenderVideoFrame userId:%s streamType:%d"), ANSI_TO_TCHAR(userId), streamType)
 
+	CurrentTime = videoFrame->timestamp;
 
-	auto VideoSample = reinterpret_cast<FTRTCMediaTextureSample*>(videoFrame);
+	FTRTCMediaTextureSample* VideoSample = reinterpret_cast<FTRTCMediaTextureSample*>(videoFrame);
 
-	VideoSample->SetTime(FTimespan(1));
-
+	VideoSample->SetTime(CurrentTime);
+	//log current time
+	UE_LOG(LogTRTCMedia, Warning, TEXT("onRenderVideoFrame CurrentTime:%d"), CurrentTime.GetTotalMilliseconds())
+	
 	Samples->AddVideo(VideoSamplePool->ToShared(VideoSample));
 
+	CurrentState = EMediaState::Playing;
 
 	// int frameLength = videoFrame->length;
 	// std::string strUserId(TCHAR_TO_UTF8(*userId));
@@ -347,6 +367,11 @@ void FTRTCMediaTracks::onRenderVideoFrame(const char* userId, TRTCVideoStreamTyp
 IMediaSamples& FTRTCMediaTracks::GetSamples() const
 {
 	return *Samples;
+}
+
+void FTRTCMediaTracks::SetCurrentTime(FTimespan Time)
+{
+	CurrentTime = Time;
 }
 
 void FTRTCMediaTracks::ResetBuffer(bool isLocal)
