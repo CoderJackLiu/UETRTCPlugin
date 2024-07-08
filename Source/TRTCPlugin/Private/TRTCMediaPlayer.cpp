@@ -19,6 +19,14 @@ FTRTCMediaPlayer::FTRTCMediaPlayer(IMediaEventSink& InEventSink)
 
 FTRTCMediaPlayer::~FTRTCMediaPlayer()
 {
+	Player->exitRoom();
+	Player->removeCallback(&Tracks);
+	Player->destroySharedInstance();
+	Player = nullptr;
+	
+	delete Samples;
+	Samples = nullptr;
+	
 	FTRTCMediaPlayer::Close();
 }
 
@@ -200,6 +208,7 @@ void FTRTCMediaPlayer::TickInput(FTimespan DeltaTime, FTimespan Timecode)
 		CurrentRate = 0.f;
 	}
 	Tracks.SetCurrentTime(CurrentTime);
+	// Tracks.SetCurrentTime(FTimespan(0));
 }
 
 void FTRTCMediaPlayer::EnterRoom(const TRTCParams& params, TRTCAppScene scene) const
@@ -228,9 +237,9 @@ bool FTRTCMediaPlayer::InitializePlayer()
 	//todo liuqi  后期从项目设置中获取到对应的APPKEY SECRET 等信息 动态获取uid, roomid等信息
 	TRTCParams params;
 	params.role = TRTCRoleAudience;
-	params.sdkAppId = 1600042662;
+	params.sdkAppId = 1600043897;
 	params.userId = "user1";
-	const char* userSig = "7ac4ceb6a62da74fa2743c8297da50b2a27faf8500360088acc1e3f3ad7fc193";
+	const char* userSig = "97e6f4f0100954b752a8ca4eda688ccaee980c574dc965322a202a35baef9e2e";
 	std::string sSig = liteav::ue::TestUserSigGenerator().gen(params.userId, params.sdkAppId, userSig);
 	params.userSig = sSig.c_str();
 	params.roomId = 123;

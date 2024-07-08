@@ -3,6 +3,8 @@
 #include "TRTCSDK/Android/include/TXLiteAVCode.h"
 // #include "TRTCCloudCallback.h"
 #include "IMediaControls.h"
+#include "IMediaSamples.h"
+#include "MediaSampleQueue.h"
 #include "TRTCCloud.h"
 
 
@@ -14,7 +16,7 @@ class FMediaSamples;
 class IMediaSamples;
 
 
-class FTRTCMediaTracks : public IMediaTracks, public IMediaControls, public ITRTCVideoRenderCallback, public ITRTCCloudCallback
+class FTRTCMediaTracks : public IMediaTracks, public IMediaSamples, public IMediaControls, public ITRTCVideoRenderCallback, public ITRTCCloudCallback
 {
 public:
 	struct FTrack
@@ -36,8 +38,36 @@ public:
 	 * @param Time The player's play time.
 	 */
 	void SetCurrentTime(FTimespan Time);
+public:
+	//~ IMediaSamples interface
 
+	virtual bool FetchAudio(TRange<FTimespan> TimeRange, TSharedPtr<IMediaAudioSample, ESPMode::ThreadSafe>& OutSample) override;
+	virtual bool FetchCaption(TRange<FTimespan> TimeRange, TSharedPtr<IMediaOverlaySample, ESPMode::ThreadSafe>& OutSample) override;
+	virtual bool FetchMetadata(TRange<FTimespan> TimeRange, TSharedPtr<IMediaBinarySample, ESPMode::ThreadSafe>& OutSample) override;
+	virtual bool FetchVideo(TRange<FTimespan> TimeRange, TSharedPtr<IMediaTextureSample, ESPMode::ThreadSafe>& OutSample) override;
+	virtual void FlushSamples() override;
+	virtual bool PeekVideoSampleTime(FMediaTimeStamp& TimeStamp) override;
 
+private:
+	/** Audio sample queue. */
+	TMediaSampleQueue<IMediaAudioSample> AudioSampleQueue;
+	
+	/** Overlay sample queue. */
+	TMediaSampleQueue<IMediaOverlaySample> CaptionSampleQueue;
+	
+	/** Metadata sample queue. */
+	TMediaSampleQueue<IMediaBinarySample> MetadataSampleQueue;
+
+	/** Video sample queue. */
+	TMediaSampleQueue<IMediaTextureSample> VideoSampleQueue;
+
+	/** Synchronizes write access to track arrays, selections & sinks. */
+	mutable FCriticalSection CriticalSection;
+
+	/** The available metadata tracks. */
+	TArray<FTrack> MetadataTracks;
+
+	
 public:
 	/**
 	 * Initialize this object for the specified VLC media player.
@@ -87,8 +117,8 @@ private:
 	// ITRTCVideoRenderCallback Customize Video Rendering Callback
 	virtual void onRenderVideoFrame(const char* userId, TRTCVideoStreamType streamType, TRTCVideoFrame* frame) override;
 
-	void ResetBuffer(bool isLocal);
-	void UpdateBuffer(char* RGBBuffer, uint32_t Width, uint32_t Height, uint32_t Size, bool isLocal);
+	// void ResetBuffer(bool isLocal);
+	// void UpdateBuffer(char* RGBBuffer, uint32_t Width, uint32_t Height, uint32_t Size, bool isLocal);
 
 protected:
 	//~ IMediaControls interface
@@ -107,22 +137,22 @@ protected:
 public:
 	virtual EMediaState GetState() const override;
 
-private:
-	//local
-	FCriticalSection localMutex;
-	uint8* localBuffer = nullptr;
-	uint32_t localWidth = 0;
-	uint32_t localHeight = 0;
-	bool localRefresh = false;
-	uint32 localBufferSize = 0;
-
-	//remote 
-	FCriticalSection remoteMutex;
-	uint8* remoteBuffer = nullptr;
-	uint32_t remoteWidth = 0;
-	uint32_t remoteHeight = 0;
-	bool remoteRefresh = false;
-	uint32 remoteBufferSize = 0;
+	// private:
+	// 	//local
+	// 	FCriticalSection localMutex;
+	// 	uint8* localBuffer = nullptr;
+	// 	uint32_t localWidth = 0;
+	// 	uint32_t localHeight = 0;
+	// 	bool localRefresh = false;
+	// 	uint32 localBufferSize = 0;
+	//
+	// 	//remote 
+	// 	FCriticalSection remoteMutex;
+	// 	uint8* remoteBuffer = nullptr;
+	// 	uint32_t remoteWidth = 0;
+	// 	uint32_t remoteHeight = 0;
+	// 	bool remoteRefresh = false;
+	// 	uint32 remoteBufferSize = 0;
 
 private:
 	/** Audio track descriptors. */
@@ -193,4 +223,6 @@ private:
 
 	/** Whether playback should be looping. */
 	bool ShouldLoop;
+
+	FCriticalSection remoteMutex;
 };

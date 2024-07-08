@@ -32,7 +32,8 @@ public class TRTCPlugin : ModuleRules
 
 				// Test Only
 				"UserSig", 
-				"Media"
+				"Media", 
+				"MediaUtils"
 			}
 		);
 
