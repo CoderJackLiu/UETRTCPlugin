@@ -1,3 +1,8 @@
+﻿/**
+ * Copyright (c) 2021 Tencent. All rights reserved.
+ * Module:   TRTC ErrorCode
+ * Function: Used to notify customers of warnings and errors that occur during the use of TRTC
+ */
 #ifndef __TXLITEAVCODE_H__
 #define __TXLITEAVCODE_H__
 
@@ -167,7 +172,6 @@ enum TXLiteAVError {
     ERR_TRTC_INVALID_PRIVATE_MAPKEY = -100006,
 
     /// The service is unavailable. Check if you have used up your package or whether your Tencent Cloud account has overdue payments.
-    /// For details, see [Package Management](https://cloud.tencent.com/document/product/647/50492).
     ERR_TRTC_SERVICE_SUSPENDED = -100013,
 
     /// Failed to verify `UserSig`. Check whether `TRTCParams.userSig` is correct or valid.
@@ -209,6 +213,34 @@ enum TXLiteAVError {
 
     /// The current user is an audience member and cannot request or stop cross-room communication. Please call `switchRole` to switch to an anchor first.
     ERR_TRTC_CONNECT_OTHER_ROOM_AS_AUDIENCE = -3330,
+
+    /////////////////////////////////////////////////////////////////////////////////
+    //       Background music error codes
+    /////////////////////////////////////////////////////////////////////////////////
+
+    /// Failed to open the file, such as invalid data found when processing input, ffmpeg protocol not found, etc.
+    ERR_BGM_OPEN_FAILED = -4001,
+
+    /// Audio file decoding failed.
+    ERR_BGM_DECODE_FAILED = -4002,
+
+    /// The number exceeds the limit, such as preloading two background music at the same time.
+    ERR_BGM_OVER_LIMIT = -4003,
+
+    /// Invalid operation, such as calling a preload function after starting playback.
+    ERR_BGM_INVALID_OPERATION = -4004,
+
+    /// Invalid path, Please check whether the path you passed points to a legal music file.
+    ERR_BGM_INVALID_PATH = -4005,
+
+    /// Invalid URL, Please use a browser to check whether the URL address you passed in can download the desired music file.
+    ERR_BGM_INVALID_URL = -4006,
+
+    /// No audio stream, Please confirm whether the file you passed is a legal audio file and whether the file is damaged.
+    ERR_BGM_NO_AUDIO_STREAM = -4007,
+
+    /// Unsupported format, Please confirm whether the file format you passed is a supported file format. The mobile version supports [mp3, aac, m4a, wav, ogg, mp4, mkv], and the desktop version supports [mp3, aac, m4a, wav, mp4, mkv].
+    ERR_BGM_FORMAT_NOT_SUPPORTED = -4008,
 };
 
 /**
@@ -223,7 +255,10 @@ enum TXLiteAVWarning {
     /// Failed to start the hardware encoder. Switched to software encoding.
     WARNING_HW_ENCODER_START_FAIL = 1103,
 
-    /// The codec changed. The additional field `type` in `onWarning` indicates the codec currently in use. `1` indicates H.265, and `0` indicates H.264. This field is not supported on Windows.
+    /// The codec changed.
+    /// The additional field `type` in `onWarning` indicates the codec currently in use. `0` indicates H.264, and `1` indicates H.265.
+    /// The additional field `hardware` in `onWarning` indicates the encoder type currently in use. `0` indicates software encoder, and `1` indicates hardware encoder.
+    /// The additional field `stream` in `onWarning` indicates the stream type currently in use. `0` indicates big stream, and `1` indicates small stream, and `2` indicates sub stream.
     WARNING_CURRENT_ENCODE_TYPE_CHANGED = 1104,
 
     /// Insufficient CPU for software encoding. Switched to hardware encoding.
@@ -244,8 +279,29 @@ enum TXLiteAVWarning {
     /// The user didn’t grant the application camera permission.
     WARNING_CAMERA_NOT_AUTHORIZED = 1112,
 
+    /// Some functions may not work properly due to out of memory.
+    WARNING_OUT_OF_MEMORY = 1113,
+
+    /// The camera is occupied.
+    WARNING_CAMERA_IS_OCCUPIED = 1114,
+
+    /// The camera device is error.
+    WARNING_CAMERA_DEVICE_ERROR = 1115,
+
+    /// The camera is disconnected.
+    WARNING_CAMERA_DISCONNECTED = 1116,
+
+    /// The camera is started failed.
+    WARNING_CAMERA_START_FAILED = 1117,
+
+    /// The camera sever is died.
+    WARNING_CAMERA_SERVER_DIED = 1118,
+
     /// The user didn’t grant the application screen recording permission.
     WARNING_SCREEN_CAPTURE_NOT_AUTHORIZED = 1206,
+
+    /// The codec changed. The additional field `type` in `onWarning` indicates the codec currently in use. `1` indicates H.265, and `0` indicates H.264. This field is not supported on Windows.
+    WARNING_CURRENT_DECODE_TYPE_CHANGED = 2008,
 
     /// Failed to decode the current video frame.
     WARNING_VIDEO_FRAME_DECODE_FAIL = 2101,
@@ -261,6 +317,18 @@ enum TXLiteAVWarning {
 
     /// Failed to render the video.
     WARNING_VIDEO_RENDER_FAIL = 2110,
+
+    /// The device does not support virtual background
+    WARNING_VIRTUAL_BACKGROUND_DEVICE_UNSURPORTED = 8001,
+
+    /// Virtual background not authorized
+    WARNING_VIRTUAL_BACKGROUND_NOT_AUTHORIZED = 8002,
+
+    /// Enable virtual background with invalid parameter
+    WARNING_VIRTUAL_BACKGROUND_INVALID_PARAMETER = 8003,
+
+    /// Virtual background performance insufficient
+    WARNING_VIRTUAL_BACKGROUND_PERFORMANCE_INSUFFICIENT = 8004,
 
     /////////////////////////////////////////////////////////////////////////////////
     //       Audio warning codes
@@ -281,11 +349,20 @@ enum TXLiteAVWarning {
     /// The audio playback device is unavailable (which may be because the device is used by another application or is considered invalid by the system).
     WARNING_SPEAKER_DEVICE_ABNORMAL = 1205,
 
+    /// The bluetooth device failed to connect (which may be because another app is occupying the audio channel by setting communication mode).
+    WARNING_BLUETOOTH_DEVICE_CONNECT_FAIL = 1207,
+
+    /// The audio capturing device is occupied.
+    WARNING_MICROPHONE_IS_OCCUPIED = 1208,
+
     /// Failed to decode the current audio frame.
     WARNING_AUDIO_FRAME_DECODE_FAIL = 2102,
 
     /// Failed to write recorded audio into the file.
     WARNING_AUDIO_RECORDING_WRITE_FAIL = 7001,
+
+    /// Detect capture audio howling
+    WARNING_MICROPHONE_HOWLING_DETECTED = 7002,
 
     /////////////////////////////////////////////////////////////////////////////////
     //       Network warning codes
@@ -293,6 +370,9 @@ enum TXLiteAVWarning {
 
     /// The current user is an audience member and cannot publish audio or video. Please switch to an anchor first.
     WARNING_IGNORE_UPSTREAM_FOR_AUDIENCE = 6001,
+
+    /// The audio or video sending timestamps are abnormal, which may cause audio and video synchronization issues.
+    WARNING_UPSTREAM_AUDIO_AND_VIDEO_OUT_OF_SYNC = 6006,
 
 };
 
@@ -329,4 +409,4 @@ enum TXLiteAVWarning {
 typedef enum TXLiteAVError TXLiteAVError;
 typedef enum TXLiteAVWarning TXLiteAVWarning;
 
-#endif /* __TXLITEAVCODE_H__ */
+#endif

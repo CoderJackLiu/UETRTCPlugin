@@ -27,9 +27,10 @@ public class TRTCSDK : ModuleRules
 			RuntimeDependencies.Add("$(BinaryOutputDir)/liteav.dll", Path.Combine(ModuleDirectory, "Win64", "liteav.dll"));
 			RuntimeDependencies.Add("$(BinaryOutputDir)/txffmpeg.dll", Path.Combine(ModuleDirectory, "Win64", "txffmpeg.dll"));
 			RuntimeDependencies.Add("$(BinaryOutputDir)/txsoundtouch.dll", Path.Combine(ModuleDirectory, "Win64", "txsoundtouch.dll"));
-			RuntimeDependencies.Add("$(BinaryOutputDir)/txsoundtouch.dll", Path.Combine(ModuleDirectory, "Win64", "liteav_screen.dll"));
+			RuntimeDependencies.Add("$(BinaryOutputDir)/liteav_screen.dll", Path.Combine(ModuleDirectory, "Win64", "liteav_screen.dll"));
 			
 		}
+		
 	
 	}
 }

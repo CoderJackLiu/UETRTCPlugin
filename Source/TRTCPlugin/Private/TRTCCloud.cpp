@@ -2,6 +2,9 @@
 
 #include "TRTCCloud.h"
 
+// #include "TRTC/ITRTCCloud.h"
+
+
 namespace liteav
 {
 	namespace ue
@@ -538,10 +541,10 @@ void TRTCCloud::startLocalPreview(bool frontCamera, TXView view) {
 			return trtc_cloud_->setAudioFrameCallback(callback);
 		}
 
-		int TRTCCloud::setCapturedRawAudioFrameCallbackFormat(TRTCAudioFrameCallbackFormat* format)
-		{
-			return trtc_cloud_->setCapturedRawAudioFrameCallbackFormat(format);
-		}
+		// int TRTCCloud::setCapturedRawAudioFrameCallbackFormat(TRTCAudioFrameCallbackFormat* format)
+		// {
+		// 	return trtc_cloud_->setCapturedRawAudioFrameCallbackFormat(format);
+		// }
 
 		int TRTCCloud::setLocalProcessedAudioFrameCallbackFormat(TRTCAudioFrameCallbackFormat* format)
 		{

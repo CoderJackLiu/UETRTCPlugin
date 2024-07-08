@@ -4,7 +4,7 @@
 #include "IMediaOverlaySample.h"
 #include "MediaHelpers.h"
 #include "TRTCLogMacro.h"
-#include "TRTCTypeDef.h"
+#include "TRTC/TRTCTypeDef.h"
 #include "MediaSamples.h"
 #include "TRTCMediaAudioSample.h"
 #include "TRTCMediaTextureSample.h"

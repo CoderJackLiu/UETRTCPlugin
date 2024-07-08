@@ -6,6 +6,9 @@
 #include <string>
 
 #include "TRTCCloudHeaderBase.h"
+// #include "TRTC/ITRTCCloud.h"
+// #include "TRTC/ITXAudioEffectManager.h"
+// #include "TRTC/TRTCCloudCallback.h"
 
 namespace liteav
 {
