@@ -8,10 +8,7 @@
 #ifndef __TXLITEAVBASE_H__
 #define __TXLITEAVBASE_H__
 
-#ifdef _WIN32
-//防止windows用户引用TXLiteAVBase.h报错
 #include "TRTCTypeDef.h"
-#endif
 
 #define LITEAV_API TRTC_API
 
@@ -43,7 +40,7 @@ extern "C" {
     /**
      * 设置 liteav SDK 接入的环境。
      * 腾讯云在全球各地区部署的环境，按照各地区政策法规要求，需要接入不同地区接入点。
-     * 
+     *
      * @param env_config 需要接入的环境，SDK 默认接入的环境是：默认正式环境。
      * @return 0：成功；其他：错误
      * @note 目标市场为中国大陆的客户请不要调用此接口，如果目标市场为海外用户，请通过技术支持联系我们，了解 env_config 的配置方法，以确保 App 遵守 GDPR 标准。
@@ -62,13 +59,7 @@ extern "C" {
      *
      * @return NTP 时间戳（毫秒），若返回 0：未启动 NTP 校时或校时失败，请重启校时
      */
-    LITEAV_API long long getNetworkTimestamp();
-
-    /**
-     * 设置外部解码器
-     *
-     */
-    LITEAV_API void setExternalDecoderFactory(liteav::TXLiteAVDecoderFactoryInterface* decoder_factory);
+    LITEAV_API int64_t getNetworkTimestamp();
 
     /**
      * 设置 NTP 校时事件回调。
