@@ -16,13 +16,13 @@ void FTRTCMediaFactoryModule::StartupModule()
 
 
 	// register player factory
-	auto MediaModule = FModuleManager::LoadModulePtr<IMediaModule>("Media");
-
-	if (MediaModule != nullptr)
-	{
-		MediaModule->RegisterPlayerFactory(*this);
-	}
-	
+	// auto MediaModule = FModuleManager::LoadModulePtr<IMediaModule>("Media");
+	//
+	// if (MediaModule != nullptr)
+	// {
+	// 	MediaModule->RegisterPlayerFactory(*this);
+	// }
+	//
 }
 
 void FTRTCMediaFactoryModule::ShutdownModule()
