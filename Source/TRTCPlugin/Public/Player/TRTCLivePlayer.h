@@ -18,6 +18,7 @@ public:
 
 	virtual ~UTRTCLivePlayer() override;
 
+private:
 	// FTickableObjectBase interface
 	virtual void Tick(float DeltaTime) override;
 	virtual ETickableTickType GetTickableTickType() const override;
@@ -25,6 +26,10 @@ public:
 	virtual TStatId GetStatId() const override;
 
 public:
+
+	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
+	void InitializePlayer();
+	
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
 	void StartPlay(const FString& url) const;
 
@@ -63,18 +68,11 @@ public:
 
 private:
 	V2TXLivePlayer* live_player_ = nullptr;
-
-
 	FUpdateTextureRegion2D* UpdateTextureRegion = nullptr;
-
 	uint8* VideoBuffer = nullptr;
-
 	uint32 TextureBufferSize = 0;
-
-
 	FCriticalSection Mutex;
 	bool VideoRefresh = false;
-
 	uint32_t TextureWidth = 0;
 	uint32_t TextureHeight = 0;
 

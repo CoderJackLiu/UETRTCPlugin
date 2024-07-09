@@ -3,9 +3,6 @@
 
 UTRTCLivePlayer::UTRTCLivePlayer()
 {
-	live_player_ = createV2TXLivePlayer();
-	live_player_->setObserver(this);
-	live_player_->enableObserveVideoFrame(true, V2TXLivePixelFormatBGRA32, V2TXLiveBufferTypeByteBuffer);
 }
 
 UTRTCLivePlayer::~UTRTCLivePlayer()
@@ -38,6 +35,13 @@ bool UTRTCLivePlayer::IsTickable() const
 TStatId UTRTCLivePlayer::GetStatId() const
 {
 	return TStatId();
+}
+
+void UTRTCLivePlayer::InitializePlayer()
+{
+	live_player_ = createV2TXLivePlayer();
+	live_player_->setObserver(this);
+	live_player_->enableObserveVideoFrame(true, V2TXLivePixelFormatBGRA32, V2TXLiveBufferTypeByteBuffer);
 }
 
 void UTRTCLivePlayer::StartPlay(const FString& url) const
@@ -125,8 +129,18 @@ void UTRTCLivePlayer::onPlayoutVolumeUpdate(V2TXLivePlayer* player, int32_t volu
 
 void UTRTCLivePlayer::onStatisticsUpdate(V2TXLivePlayer* player, V2TXLivePlayerStatistics statistics)
 {
-	//log event name
-	UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::onStatisticsUpdate" ));
+	//log one time per 100 times
+	static int count = 0;
+	//count grater than 1000 reset to 0
+	if (count > 1000)
+	{
+		count = 0;
+	}
+	if (count++ % 30 == 0)
+	{
+		//log fps and bitrate
+		UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::onStatisticsUpdate: %d %d" ), statistics.fps, statistics.videoBitrate);
+	}
 }
 
 void UTRTCLivePlayer::onSnapshotComplete(V2TXLivePlayer* player, const char* image, int length, int width, int height, V2TXLivePixelFormat format)
@@ -139,7 +153,12 @@ void UTRTCLivePlayer::onRenderVideoFrame(V2TXLivePlayer* player, const V2TXLiveV
 {
 	//log  one time per 10 times
 	static int count = 0;
-	if (count++ % 10 == 0)
+	//count grater than 1000 reset to 0
+	if (count > 1000)
+	{
+		count = 0;
+	}
+	if (count++ % 100 == 0)
 	{
 		UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::onRenderVideoFrame: %d %d %d" ), videoFrame->length, videoFrame->width, videoFrame->height);
 	}
@@ -185,11 +204,7 @@ void UTRTCLivePlayer::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t 
 		{
 			TextureWidth = NewWidth;
 			TextureHeight = NewHeight;
-#if PLATFORM_ANDROID
-	remoteRenderTargetTexture = UTexture2D::CreateTransient(remoteWidth, remoteHeight, PF_R8G8B8A8);
-#else
 			RenderTargetTexture = UTexture2D::CreateTransient(TextureWidth, TextureHeight);
-#endif
 			RenderTargetTexture->UpdateResource();
 			TextureBufferSize = TextureWidth * TextureHeight * 4;
 			VideoBuffer = new uint8[TextureBufferSize];
