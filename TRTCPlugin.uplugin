@@ -24,6 +24,11 @@
 			"Name": "TRTCMediaFactory",
 			"Type": "Editor",
 			"LoadingPhase": "PostDefault"
+		},
+		{
+			"Name": "TRTCLiveRoom",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	]
 }

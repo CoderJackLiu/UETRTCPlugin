@@ -4,7 +4,7 @@
 #include "IMediaOverlaySample.h"
 #include "MediaHelpers.h"
 #include "TRTCLogMacro.h"
-#include "TRTCTypeDef.h"
+#include "TRTC/TRTCTypeDef.h"
 #include "MediaSamples.h"
 #include "TRTCMediaAudioSample.h"
 #include "TRTCMediaTextureSample.h"
@@ -14,19 +14,20 @@
 FTRTCMediaTracks::FTRTCMediaTracks()
 	: Player(nullptr)
 	  , Samples(new FMediaSamples)
-	  , CurrentRate(30.f)
-	  , ShouldLoop(false)
-	  , CurrentTime(FTimespan::Zero())
 	  , AudioChannels(0)
 	  , AudioSampleFormat(EMediaAudioSampleFormat::Int16)
 	  , AudioSamplePool(new FTRTCMediaAudioSamplePool)
 	  , AudioSampleRate(0)
 	  , AudioSampleSize(0)
+	  , CurrentTime(FTimespan::Zero())
 	  , VideoBufferDim(FIntPoint::ZeroValue)
 	  , VideoBufferStride(0)
 	  , VideoOutputDim(FIntPoint::ZeroValue)
 	  , VideoSampleFormat(EMediaTextureSampleFormat::CharAYUV)
-	  , VideoSamplePool(new FTRTCMediaTextureSamplePool), CurrentState()
+	  , VideoSamplePool(new FTRTCMediaTextureSamplePool)
+	  , CurrentState()
+	  , CurrentRate(30.f)
+	  , ShouldLoop(false)
 {
 }
 
@@ -318,7 +319,7 @@ void FTRTCMediaTracks::onFirstVideoFrame(const char* userId, const TRTCVideoStre
 	VideoOutputDim = FIntPoint(width, height);
 	VideoSampleFormat = EMediaTextureSampleFormat::CharBGR10A2;
 	VideoBufferStride = width * 4;
-	
+
 	// if (VideoSample->Initialize(FIntPoint(width, height), FIntPoint(width, height), EMediaTextureSampleFormat::CharAYUV, width * 4, FTimespan(1)))
 	// {
 	// 	return;
@@ -387,7 +388,7 @@ void FTRTCMediaTracks::onRenderVideoFrame(const char* userId, TRTCVideoStreamTyp
 {
 	//log
 	//UE_LOG(LogTRTCMedia, Warning, TEXT("onRenderVideoFrame 1 userId:%s streamType:%d"), ANSI_TO_TCHAR(userId), streamType)
-	
+
 	FScopeLock lock(&remoteMutex);
 	{
 		//log
@@ -399,29 +400,28 @@ void FTRTCMediaTracks::onRenderVideoFrame(const char* userId, TRTCVideoStreamTyp
 
 		//log videoFrame->timestamp
 		UE_LOG(LogTRTCMedia, Warning, TEXT("onRenderVideoFrame videoFrame->timestamp:%llu"), videoFrame->timestamp)
-	
+
 
 		// 将毫秒转换为微秒，因为FTimeSpan以微秒为单位构造
 		int64 microseconds = videoFrame->timestamp * 1000;
 
 		// 使用微秒创建FTimeSpan对象
 		CurrentTime += FTimespan::FromMicroseconds(microseconds);
-	
+
 		VideoBufferDim = FIntPoint(videoFrame->width, videoFrame->height);
 		VideoOutputDim = FIntPoint(videoFrame->width, videoFrame->height);
 		VideoSampleFormat = EMediaTextureSampleFormat::CharBGR10A2;
 		VideoBufferStride = videoFrame->width * 4;
 		VideoSample->Initialize(VideoBufferDim, VideoOutputDim, EMediaTextureSampleFormat::CharBGR10A2, VideoBufferStride, FTimespan(0));
-	
+
 		// 设置 VideoSample 的时间
 		VideoSample->SetTime(CurrentTime);
-	
+
 		// VideoSample->SetTime(FTimespan(videoFrame->timestamp));
 		//log current time
 		UE_LOG(LogTRTCMedia, Warning, TEXT("onRenderVideoFrame CurrentTime:%f"), CurrentTime.GetTotalMilliseconds())
-	
 
-	
+
 		Samples->AddVideo(VideoSamplePool->ToShared(VideoSample));
 
 		// CurrentState = EMediaState::Playing;
@@ -436,7 +436,6 @@ void FTRTCMediaTracks::onRenderVideoFrame(const char* userId, TRTCVideoStreamTyp
 		// 	UpdateBuffer(videoFrame->data, videoFrame->width, videoFrame->height, frameLength, isLocalUser);
 		// }
 	}
-
 }
 
 IMediaSamples& FTRTCMediaTracks::GetSamples() const
@@ -458,13 +457,13 @@ bool FTRTCMediaTracks::FetchAudio(TRange<FTimespan> TimeRange, TSharedPtr<IMedia
 	if (!AudioSampleQueue.Peek(Sample))
 	{
 		// UE_LOG(LogTemp, Error, TEXT("!AudioSampleQueue.Dequeue(Sample)"));
-		
+
 		return false;
 	}
 
 	const FTimespan SampleTime = Sample->GetTime().Time;
 
-	if(SampleTime + Sample->GetDuration()>CurrentTime)
+	if (SampleTime + Sample->GetDuration() > CurrentTime)
 	{
 		// UE_LOG(LogTemp, Error, TEXT("Audio time >  %lu  Video time:%lu"), SampleTime.GetTicks(),CurrentTime.GetTicks());
 		//UE_LOG(LogTemp, Error, TEXT("Audio time >  %lu  Video time:%lu"), );
@@ -472,7 +471,7 @@ bool FTRTCMediaTracks::FetchAudio(TRange<FTimespan> TimeRange, TSharedPtr<IMedia
 		return false;
 	}
 
-	
+
 	// if (!TimeRange.Overlaps(TRange<FTimespan>(SampleTime, SampleTime + Sample->GetDuration())))
 	// {
 	//		AudioSampleQueue.RequestFlush();

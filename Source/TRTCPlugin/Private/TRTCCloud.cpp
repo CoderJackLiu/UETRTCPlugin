@@ -2,6 +2,9 @@
 
 #include "TRTCCloud.h"
 
+// #include "TRTC/ITRTCCloud.h"
+
+
 namespace liteav
 {
 	namespace ue
@@ -229,12 +232,12 @@ void TRTCCloud::startLocalPreview(bool frontCamera, TXView view) {
 
 		void TRTCCloud::setVideoEncoderRotation(TRTCVideoRotation rotation)
 		{
-			trtc_cloud_->setVideoEncoderRotation(rotation);
+			//trtc_cloud_->setVideoEncoderRotation(rotation);
 		}
 
 		void TRTCCloud::setVideoEncoderMirror(bool mirror)
 		{
-			trtc_cloud_->setVideoEncoderMirror(mirror);
+			//trtc_cloud_->setVideoEncoderMirror(mirror);
 		}
 
 		void TRTCCloud::enableSmallVideoStream(bool enable, const TRTCVideoEncParam& smallVideoEncParam)
@@ -306,7 +309,7 @@ void TRTCCloud::startLocalPreview(bool frontCamera, TXView view) {
 
 		void TRTCCloud::enableAudioVolumeEvaluation(uint32_t interval, bool enable_vad)
 		{
-			trtc_cloud_->enableAudioVolumeEvaluation(interval, enable_vad);
+			//trtc_cloud_->enableAudioVolumeEvaluation(interval, enable_vad);
 		}
 
 		int TRTCCloud::startAudioRecording(const TRTCAudioRecordingParams& param)
@@ -538,10 +541,10 @@ void TRTCCloud::startLocalPreview(bool frontCamera, TXView view) {
 			return trtc_cloud_->setAudioFrameCallback(callback);
 		}
 
-		int TRTCCloud::setCapturedRawAudioFrameCallbackFormat(TRTCAudioFrameCallbackFormat* format)
-		{
-			return trtc_cloud_->setCapturedRawAudioFrameCallbackFormat(format);
-		}
+		// int TRTCCloud::setCapturedRawAudioFrameCallbackFormat(TRTCAudioFrameCallbackFormat* format)
+		// {
+		// 	return trtc_cloud_->setCapturedRawAudioFrameCallbackFormat(format);
+		// }
 
 		int TRTCCloud::setLocalProcessedAudioFrameCallbackFormat(TRTCAudioFrameCallbackFormat* format)
 		{

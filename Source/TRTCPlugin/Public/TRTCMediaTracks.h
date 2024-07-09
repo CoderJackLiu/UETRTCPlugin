@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "IMediaTracks.h"
-#include "TRTCSDK/Android/include/TXLiteAVCode.h"
 // #include "TRTCCloudCallback.h"
 #include "IMediaControls.h"
 #include "IMediaSamples.h"

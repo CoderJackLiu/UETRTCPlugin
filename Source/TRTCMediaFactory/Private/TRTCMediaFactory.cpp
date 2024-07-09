@@ -16,24 +16,24 @@ void FTRTCMediaFactoryModule::StartupModule()
 
 
 	// register player factory
-	auto MediaModule = FModuleManager::LoadModulePtr<IMediaModule>("Media");
-
-	if (MediaModule != nullptr)
-	{
-		MediaModule->RegisterPlayerFactory(*this);
-	}
-	
+	// auto MediaModule = FModuleManager::LoadModulePtr<IMediaModule>("Media");
+	//
+	// if (MediaModule != nullptr)
+	// {
+	// 	MediaModule->RegisterPlayerFactory(*this);
+	// }
+	//
 }
 
 void FTRTCMediaFactoryModule::ShutdownModule()
 {
 	// unregister player factory
-	auto MediaModule = FModuleManager::GetModulePtr<IMediaModule>("Media");
-
-	if (MediaModule != nullptr)
-	{
-		MediaModule->UnregisterPlayerFactory(*this);
-	}
+	// auto MediaModule = FModuleManager::GetModulePtr<IMediaModule>("Media");
+	//
+	// if (MediaModule != nullptr)
+	// {
+	// 	MediaModule->UnregisterPlayerFactory(*this);
+	// }
 }
 
 bool FTRTCMediaFactoryModule::CanPlayUrl(const FString& Url, const IMediaOptions* Options, TArray<FText>* OutWarnings, TArray<FText>* OutErrors) const

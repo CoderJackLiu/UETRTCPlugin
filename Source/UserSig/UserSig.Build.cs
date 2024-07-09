@@ -18,17 +18,5 @@ public class UserSig : ModuleRules
 			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory, "Win64", "TXLiteAVTestUserSig.dll"));
 			RuntimeDependencies.Add("$(BinaryOutputDir)/TXLiteAVTestUserSig.dll", Path.Combine(ModuleDirectory, "Win64", "TXLiteAVTestUserSig.dll"));
 		}
-		else if (Target.Platform == UnrealTargetPlatform.Mac)
-		{
-			PublicFrameworks.Add(Path.Combine(ModuleDirectory, "Mac", "TXLiteAVTestUserSig.framework"));
-		}
-		else if (Target.Platform == UnrealTargetPlatform.IOS)
-		{
-			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "iOS", "libTXLiteAVTestUserSig.a"));
-		}
-		else if (Target.Platform == UnrealTargetPlatform.Android)
-		{
-			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(ModuleDirectory, "Android", "UPL_UserSig.xml"));
-		}
 	}
 }

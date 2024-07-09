@@ -10,6 +10,8 @@
 #include "TRTCMediaSource.h"
 #include "TRTCMediaTracks.h"
 #include "TRTCMediaView.h"
+#include "TRTCCloud.h"
+
 
 // #include "VlcMediaCallbacks.h"
 // #include "VlcMediaSource.h"
