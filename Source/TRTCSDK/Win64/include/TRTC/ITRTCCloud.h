@@ -12,7 +12,7 @@
 #include "ITXDeviceManager.h"
 #include "IDeprecatedTRTCCloud.h"
 #if defined(_WIN32) || (!__ANDROID__ && !__OHOS__ && __linux__)
-#include "TXLiteAVBase.h"
+#include "TRTCSDK/Win64/include/TXLiteAVBase.h"
 #endif
 namespace liteav {
 class ITRTCCloud;

@@ -8,8 +8,8 @@
 
 #include "TRTCTypeDef.h"
 #include "ITXDeviceManager.h"
-#include "TXLiteAVCode.h"
 #include "ITRTCStatistics.h"
+#include "TRTCSDK/Win64/include/TXLiteAVCode.h"
 
 namespace liteav {
 
