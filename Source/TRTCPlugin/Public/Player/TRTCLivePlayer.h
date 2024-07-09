@@ -8,6 +8,12 @@
 #define UpdateResource UpdateResource
 #endif
 
+//declare delegate when render target is available
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRenderTargetAvailable, UTexture2D*, VideoOutTexture);
+
+//declare delegate when begin play
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerBeginPlay, UTexture2D*, VideoOutTexture);
+
 UCLASS(BlueprintType, Blueprintable)
 class UTRTCLivePlayer : public UObject, public FTickableGameObject, public V2TXLivePlayerObserver
 {
@@ -26,24 +32,31 @@ private:
 	virtual TStatId GetStatId() const override;
 
 public:
-
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
 	void InitializePlayer();
-	
+
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
 	void StartPlay(const FString& url) const;
 
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
-	void StopPlay() const;
+	void StopPlay() ;
 
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
-	void PauseVideo() const;
+	void PauseVideo() ;
 
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
 	void ResumeVideo() const;
 
 	UFUNCTION(BlueprintPure, Category = "TRTCPlayer")
 	bool IsPlaying() const;
+
+	//FOnRenderTargetAvailable
+	UPROPERTY(BlueprintAssignable, Category = "TRTCPlayer")
+	FOnRenderTargetAvailable OnRenderTargetAvailable;
+
+	//FOnPlayerBeginPlay
+	UPROPERTY(BlueprintAssignable, Category = "TRTCPlayer")
+	FOnPlayerBeginPlay OnPlayerBeginPlay;
 
 private:
 	//V2TXLivePlayerObserver interface
@@ -75,6 +88,7 @@ private:
 	bool VideoRefresh = false;
 	uint32_t TextureWidth = 0;
 	uint32_t TextureHeight = 0;
+	bool IsBeginPlay = false;
 
 private:
 	void UpdateBuffer(char* RGBBuffer, uint32_t Width, uint32_t Height, uint32_t Size);

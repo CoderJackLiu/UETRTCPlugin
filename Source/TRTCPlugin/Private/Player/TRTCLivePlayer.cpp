@@ -51,18 +51,20 @@ void UTRTCLivePlayer::StartPlay(const FString& url) const
 	live_player_->startPlay(TCHAR_TO_ANSI(*url));
 }
 
-void UTRTCLivePlayer::StopPlay() const
+void UTRTCLivePlayer::StopPlay()
 {
 	//log event name
 	UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::StopPlay" ));
 	live_player_->stopPlay();
+	IsBeginPlay = false;
 }
 
-void UTRTCLivePlayer::PauseVideo() const
+void UTRTCLivePlayer::PauseVideo()
 {
 	//log event name
 	UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::PauseVideo" ));
 	live_player_->pauseVideo();
+	IsBeginPlay = false;
 }
 
 void UTRTCLivePlayer::ResumeVideo() const
@@ -196,10 +198,8 @@ void UTRTCLivePlayer::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t 
 	}
 	if (!VideoRefresh)
 	{
-		// Fist Remote User Video Frame
-		UE_LOG(LogTemp, Warning, TEXT("remoteRefresh==false; NewSize=%d ,NewWidth=%d, NewHeight=%d"), NewSize, NewWidth,
-		       NewHeight);
-		VideoRefresh = true;
+		// Fist Video Frame
+		UE_LOG(LogTemp, Warning, TEXT("VideoRefresh==false; NewSize=%d ,NewWidth=%d, NewHeight=%d"), NewSize, NewWidth, NewHeight);
 		AsyncTask(ENamedThreads::GameThread, [=]()
 		{
 			TextureWidth = NewWidth;
@@ -217,25 +217,41 @@ void UTRTCLivePlayer::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t 
 			}
 			UpdateTextureRegion = new FUpdateTextureRegion2D(0, 0, 0, 0, TextureWidth, TextureHeight);
 			RenderTargetTexture->UpdateTextureRegions(0, 1, UpdateTextureRegion, TextureWidth * 4, (uint32)4, VideoBuffer);
+			OnRenderTargetAvailable.Broadcast(RenderTargetTexture);
+			VideoRefresh = true;
 		});
 		return;
 	}
-	if (TextureBufferSize == NewSize)
+	//if second time enter this func
+	if (!IsBeginPlay)
+	{
+		IsBeginPlay = true;
+		AsyncTask(ENamedThreads::GameThread, [=]()
+		          {
+			          OnPlayerBeginPlay.Broadcast(RenderTargetTexture);
+		          }
+		);
+	}
+
+	if(TextureBufferSize==NewSize)
 	{
 		TextureWidth = NewWidth;
 		TextureHeight = NewHeight;
-		std::copy(RGBBuffer, RGBBuffer + NewSize, VideoBuffer);
+		std::copy_n(RGBBuffer, NewSize, VideoBuffer);
 	}
 	else
 	{
-		delete[] VideoBuffer;
+		if (VideoBuffer)
+		{
+			delete[] VideoBuffer;
+		}
 		TextureBufferSize = NewSize;
 		TextureWidth = NewWidth;
 		TextureHeight = NewHeight;
 		VideoBuffer = new uint8[TextureBufferSize];
-		std::copy(RGBBuffer, RGBBuffer + NewSize, VideoBuffer);
+		std::copy_n(RGBBuffer, NewSize, VideoBuffer);
 	}
-	VideoRefresh = true;
+	VideoRefresh =true;
 }
 
 void UTRTCLivePlayer::ResetBuffer()
