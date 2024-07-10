@@ -44,7 +44,7 @@
 #define trtc_attribute_deprecated
 #endif
 
-#define TARGET_PLATFORM_DESKTOP ((__APPLE__ && TARGET_OS_MAC && !TARGET_OS_IPHONE) || _WIN32 || (!__ANDROID__ && !__OHOS__ && __linux__))
+#define TARGET_PLATFORM_DESKTOP _WIN32
 #define TARGET_PLATFORM_PHONE (__ANDROID__ || __OHOS__ || (__APPLE__ && TARGET_OS_IOS))
 #define TARGET_PLATFORM_MAC (__APPLE__ && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 namespace liteav {
@@ -340,9 +340,6 @@ enum TRTCVideoBufferType {
 enum TRTCVideoMirrorType {
 
 /// Auto mode: mirror the front camera's image but not the rear camera's image (for mobile devices only).
-#if TARGET_PLATFORM_PHONE
-    TRTCVideoMirrorType_Auto = 0,
-#endif
 
     /// Mirror the images of both the front and rear cameras.
     TRTCVideoMirrorType_Enable = 1,

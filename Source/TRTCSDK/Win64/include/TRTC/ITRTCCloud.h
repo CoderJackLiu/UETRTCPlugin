@@ -468,9 +468,7 @@ class ITRTCCloud : public IDeprecatedTRTCCloud {
  *  - Scheme 1. Call `startLocalPreview` before calling `enterRoom`
  *  - Scheme 2. Call `startLocalPreview` and `muteLocalVideo(true)` after calling `enterRoom`
  */
-#if TARGET_PLATFORM_PHONE
-    virtual void startLocalPreview(bool frontCamera, TXView view) = 0;
-#endif
+
 
 /**
  * 4.2 Enable the preview image of local camera (desktop)

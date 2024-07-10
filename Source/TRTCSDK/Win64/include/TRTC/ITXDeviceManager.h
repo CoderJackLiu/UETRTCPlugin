@@ -197,7 +197,7 @@ class ITXDeviceCollection {
     virtual void release() = 0;
 };
 
-#if (__APPLE__ && TARGET_OS_MAC && !TARGET_OS_IPHONE) || _WIN32 || (!__ANDROID__ && !__OHOS__ && __linux__)
+#if _WIN32
 class ITXDeviceObserver {
    public:
     virtual ~ITXDeviceObserver() {
@@ -233,65 +233,6 @@ class ITXDeviceManager {
 /**
  * 1.1 Querying whether the front camera is being used
  */
-#if __ANDROID__ || __OHOS__ || (__APPLE__ && TARGET_OS_IOS)
-    virtual bool isFrontCamera() = 0;
-
-    /**
-     * 1.2 Switching to the front/rear camera (for mobile OS)
-     */
-    virtual int switchCamera(bool frontCamera) = 0;
-
-    /**
-     * 1.3 Getting the maximum zoom ratio of the camera (for mobile OS)
-     */
-    virtual float getCameraZoomMaxRatio() = 0;
-
-    /**
-     * 1.4 Setting the camera zoom ratio (for mobile OS)
-     *
-     * @param zoomRatio Value range: 1-5. 1 indicates the widest angle of view (original), and 5 the narrowest angle of view (zoomed in).The maximum value is recommended to be 5. If the value exceeds 5, the video will become blurred.
-     */
-    virtual int setCameraZoomRatio(float zoomRatio) = 0;
-
-    /**
-     * 1.5 Querying whether automatic face detection is supported (for mobile OS)
-     */
-    virtual bool isAutoFocusEnabled() = 0;
-
-    /**
-     * 1.6 Enabling auto focus (for mobile OS)
-     *
-     * After auto focus is enabled, the camera will automatically detect and always focus on faces.
-     */
-    virtual int enableCameraAutoFocus(bool enabled) = 0;
-
-    /**
-     * 1.7 Adjusting the focus (for mobile OS)
-     *
-     * This API can be used to achieve the following:
-     * 1. A user can tap on the camera preview.
-     * 2. A rectangle will appear where the user taps, indicating the spot the camera will focus on.
-     * 3. The user passes the coordinates of the spot to the SDK using this API, and the SDK will instruct the camera to focus as required.
-     * @param position The spot to focus on. Pass in the coordinates of the spot you want to focus on.
-     * @return 0: operation successful; negative number: operation failed.
-     * @note Before using this API, you must first disable auto focus using {@link enableCameraAutoFocus}.
-     */
-    virtual int setCameraFocusPosition(float x, float y) = 0;
-
-    /**
-     * 1.8 Enabling/Disabling flash, i.e., the torch mode (for mobile OS)
-     */
-    virtual int enableCameraTorch(bool enabled) = 0;
-
-    /**
-     * 1.9 Setting the audio route (for mobile OS)
-     *
-     * A mobile phone has two audio playback devices: the receiver at the top and the speaker at the bottom.
-     * If the audio route is set to the receiver, the volume is relatively low, and audio can be heard only when the phone is put near the ear. This mode has a high level of privacy and is suitable for answering calls.
-     * If the audio route is set to the speaker, the volume is relatively high, and there is no need to put the phone near the ear. This mode enables the "hands-free" feature.
-     */
-    virtual int setAudioRoute(TXAudioRoute route) = 0;
-#endif
 
 /**
  * 2.1 Getting the device list (for desktop OS)
@@ -303,7 +244,7 @@ class ITXDeviceManager {
  *   - The valid values of `type` are `TXMediaDeviceTypeMic`, `TXMediaDeviceTypeSpeaker`, and `TXMediaDeviceTypeCamera`.
  *   - This API can be used only on macOS and Windows.
  */
-#if (__APPLE__ && TARGET_OS_MAC && !TARGET_OS_IPHONE) || _WIN32 || (!__ANDROID__ && __OHOS__ && __linux__)
+#if _WIN32
     virtual ITXDeviceCollection* getDevicesList(TXMediaDeviceType type) = 0;
 
     /**
@@ -454,7 +395,7 @@ class ITXDeviceManager {
 /**
  * 2.23 set onDeviceChanged callback
  */
-#if (__APPLE__ && TARGET_OS_MAC && !TARGET_OS_IPHONE) || _WIN32 || (!__ANDROID__ && !__OHOS__ && __linux__)
+#if _WIN32
     virtual void setDeviceObserver(ITXDeviceObserver* observer) = 0;
 #endif
 
@@ -469,9 +410,7 @@ class ITXDeviceManager {
  *
  * @deprecated This API is not recommended after v9.5. Please use the `startLocalAudio(quality)` API in `TRTCCloud` instead, which param `quality` is used to decide audio quality.
  */
-#if __ANDROID__ || __OHOS__ || (__APPLE__ && TARGET_OS_IOS)
-    virtual int setSystemVolumeType(TXSystemVolumeType type) = 0;
-#endif
+
 };
 }  // namespace liteav
 

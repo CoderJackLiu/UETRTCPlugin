@@ -54,35 +54,6 @@ public class TRTCPlugin : ModuleRules
 			{
 			}
 		);
-
-		if (Target.Platform == UnrealTargetPlatform.Mac)
-		{
-			PublicAdditionalLibraries.Add("resolv");
-			PublicFrameworks.AddRange(
-				new string[]
-				{
-					"AppKit",
-					"IOKit",
-					"CoreVideo",
-					"CFNetwork",
-					"MetalKit",
-					"OpenGl",
-					"CoreGraphics",
-					"Accelerate",
-					"CoreFoundation",
-					"SystemConfiguration",
-					"AudioToolbox",
-					"VideoToolbox",
-					"CoreTelephony",
-					"CoreWLAN",
-					"AVFoundation",
-					"CoreMedia",
-					"CoreImage",
-					"QuartzCore",
-					"CoreAudio"
-				});
-		}
-
 		bEnableUndefinedIdentifierWarnings = false;
 	}
 }

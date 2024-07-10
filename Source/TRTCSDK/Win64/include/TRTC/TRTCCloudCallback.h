@@ -445,10 +445,7 @@ class ITRTCCloudCallback {
  * The SDK returns this callback after trying to enable system audio capturing. To determine whether it is actually enabled, pay attention to the error parameter in the callback.
  * @param err If it is `ERR_NULL`, system audio capturing is enabled successfully. Otherwise, it is not.
  */
-#if TARGET_PLATFORM_MAC
-    virtual void onSystemAudioLoopbackError(TXLiteAVError errCode) {
-    }
-#endif
+
 
 /**
  * 6.9 Volume during mic test

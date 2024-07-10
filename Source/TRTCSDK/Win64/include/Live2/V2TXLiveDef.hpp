@@ -28,7 +28,7 @@
 #define V2_API
 #endif
 
-#define TARGET_PLATFORM_DESKTOP ((__APPLE__ && TARGET_OS_MAC && !TARGET_OS_IPHONE) || _WIN32 || (!__ANDROID__ && !__OHOS__ && __linux__))
+#define TARGET_PLATFORM_DESKTOP _WIN32
 #define TARGET_PLATFORM_PHONE (__ANDROID__ || __OHOS__ || (__APPLE__ && TARGET_OS_IOS))
 
 namespace liteav {
