@@ -54,6 +54,7 @@ public class TRTCPlugin : ModuleRules
 			{
 			}
 		);
+
 		bEnableUndefinedIdentifierWarnings = false;
 	}
 }

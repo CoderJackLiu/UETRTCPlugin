@@ -48,11 +48,12 @@ void UTRTCLivePlayer::InitializePlayer()
 	live_player_->enableObserveVideoFrame(true, V2TXLivePixelFormatBGRA32, V2TXLiveBufferTypeByteBuffer);
 }
 
-void UTRTCLivePlayer::StartPlay(const FString& url) const
+void UTRTCLivePlayer::StartPlay(const FString& url)
 {
 	//log event name
 	UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::StartPlay" ));
 	live_player_->startPlay(TCHAR_TO_ANSI(*url));
+	CurrentPlayURL = url;
 }
 
 void UTRTCLivePlayer::StopPlay()
@@ -232,7 +233,7 @@ void UTRTCLivePlayer::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t 
 		IsBeginPlay = true;
 		AsyncTask(ENamedThreads::GameThread, [=]()
 		          {
-			          OnPlayerBeginPlay.Broadcast(RenderTargetTexture);
+			          OnPlayerBeginPlay.Broadcast(RenderTargetTexture, CurrentPlayURL);
 		          }
 		);
 	}

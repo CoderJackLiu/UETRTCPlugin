@@ -12,7 +12,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRenderTargetAvailable, UTexture2D*, VideoOutTexture);
 
 //declare delegate when begin play
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerBeginPlay, UTexture2D*, VideoOutTexture);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerBeginPlay, UTexture2D*, VideoOutTexture, const FString&, OpenedUrl);
 
 UCLASS(BlueprintType, Blueprintable)
 class TRTCPLUGIN_API UTRTCLivePlayer : public UObject, public FTickableGameObject, public V2TXLivePlayerObserver
@@ -36,7 +36,7 @@ public:
 	void InitializePlayer();
 
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
-	void StartPlay(const FString& url) const;
+	void StartPlay(const FString& url);
 
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
 	void StopPlay();
@@ -89,6 +89,8 @@ private:
 	uint32_t TextureWidth = 0;
 	uint32_t TextureHeight = 0;
 	bool IsBeginPlay = false;
+
+	FString CurrentPlayURL;
 
 private:
 	void UpdateBuffer(char* RGBBuffer, uint32_t Width, uint32_t Height, uint32_t Size);
