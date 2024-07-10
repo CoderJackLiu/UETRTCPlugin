@@ -3,6 +3,8 @@
 
 UTRTCLivePlayer::UTRTCLivePlayer()
 {
+	//log trtc live player constructor
+	UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::UTRTCLivePlayer Construct!" ));
 }
 
 UTRTCLivePlayer::~UTRTCLivePlayer()
@@ -14,6 +16,8 @@ UTRTCLivePlayer::~UTRTCLivePlayer()
 		delete[] VideoBuffer;
 		delete UpdateTextureRegion;
 	}
+	//log trtc live player destructor
+	UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::~UTRTCLivePlayer Destruct!" ));
 }
 
 void UTRTCLivePlayer::Tick(float DeltaTime)
@@ -233,7 +237,7 @@ void UTRTCLivePlayer::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t 
 		);
 	}
 
-	if(TextureBufferSize==NewSize)
+	if (TextureBufferSize == NewSize)
 	{
 		TextureWidth = NewWidth;
 		TextureHeight = NewHeight;
@@ -251,7 +255,7 @@ void UTRTCLivePlayer::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t 
 		VideoBuffer = new uint8[TextureBufferSize];
 		std::copy_n(RGBBuffer, NewSize, VideoBuffer);
 	}
-	VideoRefresh =true;
+	VideoRefresh = true;
 }
 
 void UTRTCLivePlayer::ResetBuffer()

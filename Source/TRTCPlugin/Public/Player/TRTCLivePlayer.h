@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRenderTargetAvailable, UTexture2D
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerBeginPlay, UTexture2D*, VideoOutTexture);
 
 UCLASS(BlueprintType, Blueprintable)
-class UTRTCLivePlayer : public UObject, public FTickableGameObject, public V2TXLivePlayerObserver
+class TRTCPLUGIN_API UTRTCLivePlayer : public UObject, public FTickableGameObject, public V2TXLivePlayerObserver
 {
 	GENERATED_BODY()
 
@@ -39,10 +39,10 @@ public:
 	void StartPlay(const FString& url) const;
 
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
-	void StopPlay() ;
+	void StopPlay();
 
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
-	void PauseVideo() ;
+	void PauseVideo();
 
 	UFUNCTION(BlueprintCallable, Category = "TRTCPlayer")
 	void ResumeVideo() const;
