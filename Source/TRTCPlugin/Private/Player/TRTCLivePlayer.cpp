@@ -197,13 +197,13 @@ void UTRTCLivePlayer::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t 
 	}
 	if (NewHeight != TextureHeight)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("NewHeight != remoteHeight ,remoteHeight=%d, NewHeight=%d"), TextureHeight,
+		UE_LOG(LogTRTCMedia, Warning, TEXT("NewHeight != remoteHeight ,remoteHeight=%d, NewHeight=%d"), TextureHeight,
 		       NewHeight);
 	}
 	if (!VideoRefresh)
 	{
 		// Fist Video Frame
-		UE_LOG(LogTemp, Warning, TEXT("VideoRefresh==false; NewSize=%d ,NewWidth=%d, NewHeight=%d"), NewSize, NewWidth, NewHeight);
+		UE_LOG(LogTRTCMedia, Warning, TEXT("VideoRefresh==false; NewSize=%d ,NewWidth=%d, NewHeight=%d"), NewSize, NewWidth, NewHeight);
 		AsyncTask(ENamedThreads::GameThread, [=]()
 		{
 			TextureWidth = NewWidth;
@@ -277,7 +277,7 @@ void UTRTCLivePlayer::RenderVideoFrameToRT()
 		return;
 	if (RenderTargetTexture->GetSizeX() != TextureWidth || RenderTargetTexture->GetSizeY() != TextureHeight)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("remoteBufferSize=%d, remoteWidth=%d, remoteHeight=%d  remoteRenderTargetTexture->GetSizeX =%d , ""remoteRenderTargetTexture->GetSizeY =%d"), TextureBufferSize, TextureWidth, TextureHeight,
+		UE_LOG(LogTRTCMedia, Warning, TEXT("remoteBufferSize=%d, remoteWidth=%d, remoteHeight=%d  remoteRenderTargetTexture->GetSizeX =%d , ""remoteRenderTargetTexture->GetSizeY =%d"), TextureBufferSize, TextureWidth, TextureHeight,
 		       RenderTargetTexture->GetSizeX(), RenderTargetTexture->GetSizeY());
 		auto NewUpdateTextureRegion = new FUpdateTextureRegion2D(0, 0, 0, 0, TextureWidth, TextureHeight);
 		auto NewRenderTargetTexture = UTexture2D::CreateTransient(TextureWidth, TextureHeight);
