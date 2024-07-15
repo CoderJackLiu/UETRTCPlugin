@@ -1,4 +1,6 @@
 ﻿#include "Player/TRTCLivePlayer.h"
+
+#include "TRTCCloud.h"
 #include "TRTCLogMacro.h"
 
 UTRTCLivePlayer::UTRTCLivePlayer()
@@ -46,6 +48,10 @@ void UTRTCLivePlayer::InitializePlayer()
 	live_player_ = createV2TXLivePlayer();
 	live_player_->setObserver(this);
 	live_player_->enableObserveVideoFrame(true, V2TXLivePixelFormatBGRA32, V2TXLiveBufferTypeByteBuffer);
+	std::string Version = ue::TRTCCloud::getSharedInstance()->getSDKVersion();
+	FString VersionStr = ANSI_TO_TCHAR(Version.c_str());
+	//log trtc live player version
+	UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::InitializePlayer Version: %s" ), *VersionStr);
 }
 
 void UTRTCLivePlayer::StartPlay(const FString& url)

@@ -2,7 +2,7 @@
 
 ## Description
 * The plugin is designed to provide an easy way to integrate Tencent's TRTC SDK with Unreal Engine 5.1. 
-* SDK version :
+* TRTC SDK version : 11.9.0.15031
 
 ## Features
 1. TRTC SDK integration;
