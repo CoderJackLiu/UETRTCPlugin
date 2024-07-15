@@ -15,11 +15,8 @@ public class TRTCSDK : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Win64", "include"));
-			PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Win64", "include", "Live2"));
-			PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Win64", "include", "TRTC"));
-			PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Win64", "include", "Vod"));
 
-
+			
 			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Win64", "liteav.lib"));
 
 			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory, "Win64", "liteav.dll"));
@@ -31,6 +28,9 @@ public class TRTCSDK : ModuleRules
 			RuntimeDependencies.Add("$(BinaryOutputDir)/txffmpeg.dll", Path.Combine(ModuleDirectory, "Win64", "txffmpeg.dll"));
 			RuntimeDependencies.Add("$(BinaryOutputDir)/txsoundtouch.dll", Path.Combine(ModuleDirectory, "Win64", "txsoundtouch.dll"));
 			// RuntimeDependencies.Add("$(BinaryOutputDir)/liteav_screen.dll", Path.Combine(ModuleDirectory, "Win64", "liteav_screen.dll"));
+			
 		}
+		
+	
 	}
 }

@@ -3,7 +3,7 @@
 #ifndef USERSIG_DEBUGDEFS_H_
 #define USERSIG_DEBUGDEFS_H_
 
-static const int SDKAppID = 1600043897;
+static const int SDKAppID = 0;
 
 /**
  *
@@ -12,7 +12,7 @@ static const int SDKAppID = 1600043897;
  * for the local execution and debugging of the demo.
  *
  */
-static const char* SECRETKEY = "97e6f4f0100954b752a8ca4eda688ccaee980c574dc965322a202a35baef9e2e";
+static const char* SECRETKEY = "";
 
 /**
  * Signature expired time in second.

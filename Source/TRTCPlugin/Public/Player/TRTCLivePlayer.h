@@ -14,6 +14,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRenderTargetAvailable, UTexture2D
 //declare delegate when begin play
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerBeginPlay, UTexture2D*, VideoOutTexture, const FString&, OpenedUrl);
 
+//declare delegate when player error
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerPlayError, const FString&, OpenedUrl);
+
 UCLASS(BlueprintType, Blueprintable)
 class TRTCPLUGIN_API UTRTCLivePlayer : public UObject, public FTickableGameObject, public V2TXLivePlayerObserver
 {
@@ -58,6 +61,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "TRTCPlayer")
 	FOnPlayerBeginPlay OnPlayerBeginPlay;
 
+	UPROPERTY(BlueprintAssignable, Category = "TRTCPlayer")
+	FOnPlayerPlayError OnPlayerPlayError;
+
+	
+
 private:
 	//V2TXLivePlayerObserver interface
 	virtual void onError(V2TXLivePlayer* player, int32_t code, const char* msg, void* extraInfo) override;
@@ -97,4 +105,8 @@ private:
 
 	void ResetBuffer();
 	void RenderVideoFrameToRT();
+
+	//should be define in a project settings or a config file 
+	uint8 ZeroFpsTimes = 0;
+	const uint8 MaxZeroFpsTimes = 5;
 };

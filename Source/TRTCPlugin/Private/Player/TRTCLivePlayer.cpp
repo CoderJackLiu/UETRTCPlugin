@@ -143,10 +143,28 @@ void UTRTCLivePlayer::onStatisticsUpdate(V2TXLivePlayer* player, V2TXLivePlayerS
 	{
 		count = 0;
 	}
-	if (count++ % 30 == 0)
+	if (count++ % 15 == 0)
 	{
 		//log fps and bitrate
 		UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::onStatisticsUpdate: %d %d" ), statistics.fps, statistics.videoBitrate);
+	}
+	if (statistics.fps == 0)
+	{
+		//log current url
+		UE_LOG(LogTRTCMedia, Log, TEXT( "UTRTCLivePlayer::onStatisticsUpdate url fps zero for : %s" ), *CurrentPlayURL);
+		ZeroFpsTimes++;
+		if (ZeroFpsTimes > MaxZeroFpsTimes)
+		{
+			//log error ZeroFpsTimes triggerred MaxZeroFpsTimes
+			UE_LOG(LogTRTCMedia, Error, TEXT( "UTRTCLivePlayer::onStatisticsUpdate ZeroFpsTimes Triggerred MaxZeroFpsTimes: %d for : %s" ), MaxZeroFpsTimes, *CurrentPlayURL);
+			AsyncTask(ENamedThreads::GameThread, [=]()
+			          {
+				          OnPlayerPlayError.Broadcast(CurrentPlayURL);
+			          }
+			);
+			StopPlay();
+			ZeroFpsTimes = 0;
+		}
 	}
 }
 
@@ -227,16 +245,7 @@ void UTRTCLivePlayer::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t 
 		});
 		return;
 	}
-	//if second time enter this func
-	if (!IsBeginPlay)
-	{
-		IsBeginPlay = true;
-		AsyncTask(ENamedThreads::GameThread, [=]()
-		          {
-			          OnPlayerBeginPlay.Broadcast(RenderTargetTexture, CurrentPlayURL);
-		          }
-		);
-	}
+
 
 	if (TextureBufferSize == NewSize)
 	{
@@ -255,6 +264,18 @@ void UTRTCLivePlayer::UpdateBuffer(char* RGBBuffer, uint32_t NewWidth, uint32_t 
 		TextureHeight = NewHeight;
 		VideoBuffer = new uint8[TextureBufferSize];
 		std::copy_n(RGBBuffer, NewSize, VideoBuffer);
+	}
+	//if second time enter this func
+	if (!IsBeginPlay)
+	{
+		IsBeginPlay = true;
+		AsyncTask(ENamedThreads::GameThread, [=]()
+		          {
+			          //log first frame come in
+			          UE_LOG(LogTRTCMedia, Warning, TEXT("UTRTCLivePlayer::UpdateBuffer First Frame Come In"));
+			          OnPlayerBeginPlay.Broadcast(RenderTargetTexture, CurrentPlayURL);
+		          }
+		);
 	}
 	VideoRefresh = true;
 }
