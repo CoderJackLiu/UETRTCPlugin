@@ -53,6 +53,59 @@
 * [API Doc](https://liteav.sdk.qcloud.com/doc/api/zh-cn/index.html)
 * [Forked Plugin](https://github.com/LiteAVSDK/TRTC_UnrealEngine.git)
 
+<hr style="border: 2px solid white;">
 
-    
- 
+ # UETRTC插件
+
+## 描述
+* 该插件旨在提供一种将腾讯的TRTC SDK集成到Unreal Engine 5.1中的简单方法。
+* TRTC SDK版本：11.9.0.15031
+
+## 特性
+1. TRTC SDK集成；
+2. TRTC视频播放器集成，您可以免费播放RTMP和TRTC URL；
+3. 支持TRTC直播间/视频通话/语音通话/语音聊天室；
+4. 使用UTRTCLivePlayer时进行RenderTargetTexture2D渲染；
+
+## 安装
+
+1. 将仓库克隆到您的Unreal Engine项目的插件文件夹中：
+    ```
+    cd <YourUnrealProject>/Plugins/
+    git clone https://github.com/CoderJackLiu/UETRTCPlugin.git
+    ```
+2. 在Unreal Engine中打开项目。
+3. 在插件菜单中启用插件。
+
+## 使用方法
+1. **播放RTMP/TRTC URL**
+- TRTC播放器对我们的用户是免费的。
+- 创建一个TRTCLivePlayer
+    ```
+    UTRTCLivePlayer* TRTCPlayer= NewObject<UTRTCLivePlayer>();
+    TRTCPlayer->AddToRoot();
+    TRTCPlayer->InitializePlayer();
+    ```
+- 开始播放
+    ```
+    TRTCPlayer->StartPlay(url);
+    ```
+- 停止播放
+    ```
+    TRTCPlayer->StopPlay();
+    ```
+- 暂停视频
+    ```
+    TRTCPlayer->PauseVideo();
+    ```
+- 您可以在**TRTCLivePlayer.h**文件中找到它的API。
+---
+
+2. **将TRTC用作TRTC直播间/视频通话/音频通话**
+- 使用这些功能并不是免费的。您需要在腾讯云创建账户 https://console.cloud.tencent.com/trtc
+---
+
+## 参考资料
+* [激活TRTC直播播放服务](https://console.cloud.tencent.com/trtc)
+* [API文档](https://liteav.sdk.qcloud.com/doc/api/zh-cn/index.html)
+* [Forked插件](https://github.com/LiteAVSDK/TRTC_UnrealEngine.git)
